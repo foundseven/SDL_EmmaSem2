@@ -39,7 +39,7 @@ void TitleState::Exit()
 
 /////////////////////////////////////////////// Main Menu Screen //////////////////////////////////////////////////////////
 
-// Begining of Main Menu
+// Main Menu Done
 void MainMenuScreen::Enter()
 {
 	std::cout << "Going to Main Menu..." << std::endl;
@@ -146,15 +146,12 @@ void PauseState::Enter()
 
 void PauseState::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_R))
-	{
-		StateManager::PopState(); // Change to new PauseState
-	}
 	if (Game::GetInstance().KeyDown(SDL_SCANCODE_ESCAPE))
 	{
 		std::cout << "Moving back to the Game State..." << std::endl;
-		StateManager::ChangeState(new GameState()); // Change back to main menu                     this needs to be tweaked so it doesnt restart
+		StateManager::PopState(); // Change to new PauseState
 	}
+	
 }
 
 void PauseState::Render()
