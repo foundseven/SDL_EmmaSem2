@@ -3,12 +3,13 @@
 #include "StateManager.h"
 #include <iostream>
 
+
 /////////////////////////////////////////////// TITLESTATE //////////////////////////////////////////////////////////
 
-// Begin of TitleState
+// Title Finished
 void TitleState::Enter()
 {
-	std::cout << "Entering TitleState..." << std::endl;
+	std::cout << "TitleState activated!" << std::endl;
 	startTime = SDL_GetTicks();
 }
 
@@ -18,8 +19,8 @@ void TitleState::Update(float deltaTime)
 
 	if (elapsedTime >= 4000) 
 	{
-		std::cout << "Transitioning to GameState" << std::endl;
-		StateManager::ChangeState(new GameState()); // Change to new GameState
+		std::cout << "Moving to GameState" << std::endl;
+		StateManager::ChangeState(new MainMenuScreen()); // Change to the menu after 4 seconds
 	}
 }
 
@@ -32,9 +33,47 @@ void TitleState::Render()
 
 void TitleState::Exit()
 {
-	std::cout << "Exiting TitleState..." << std::endl;
+	std::cout << "Leaving TitleState..." << std::endl;
 }
 // End of TitleState
+
+/////////////////////////////////////////////// Main Menu Screen //////////////////////////////////////////////////////////
+
+// Begining of Main Menu
+void MainMenuScreen::Enter()
+{
+	std::cout << "Going to Main Menu..." << std::endl;
+	
+}
+
+void MainMenuScreen::Update(float deltaTime)
+{
+	if (Game::GetInstance().KeyDown(SDL_SCANCODE_G))
+	{
+		std::cout << "Changing to GameState" << std::endl;
+		StateManager::ChangeState(new GameState()); // Change to GS
+	}
+
+	if (Game::GetInstance().KeyDown(SDL_SCANCODE_C))
+	{
+		std::cout << "Rolling credits!" << std::endl;
+		StateManager::ChangeState(new CreditScreen()); // Change to Credits
+	}
+}
+
+void MainMenuScreen::Render()
+{
+	std::cout << "Rendering Main Menu..." << std::endl;
+	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 148, 0, 211, 255); // Changes the color or the titleState
+	SDL_RenderClear(Game::GetInstance().GetRenderer());
+}
+
+void MainMenuScreen::Exit()
+{
+	std::cout << "Exiting Main Menu" << std::endl;
+}
+// End of TitleState
+
 
 /////////////////////////////////////////////// GAMESTATE ////////////////////////////////////////////////////////////
 
@@ -51,9 +90,9 @@ void GameState::Enter() // Used for initialization
 
 void GameState::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_X))
+	if (Game::GetInstance().KeyDown(SDL_SCANCODE_M))
 	{
-		std::cout << "Changing to GameState" << std::endl;
+		std::cout << "Going back to the Main Menu" << std::endl;
 		StateManager::ChangeState(new TitleState()); // Change to new TitleState
 	}
 	if (Game::GetInstance().KeyDown(SDL_SCANCODE_P))
@@ -111,6 +150,11 @@ void PauseState::Update(float deltaTime)
 	{
 		StateManager::PopState(); // Change to new PauseState
 	}
+	if (Game::GetInstance().KeyDown(SDL_SCANCODE_ESCAPE))
+	{
+		std::cout << "Moving back to the Game State..." << std::endl;
+		StateManager::ChangeState(new GameState()); // Change back to main menu                     this needs to be tweaked so it doesnt restart
+	}
 }
 
 void PauseState::Render()
@@ -118,6 +162,7 @@ void PauseState::Render()
 	std::cout << "Rendering PauseState..." << std::endl;
 	// First render of the GameState
 	StateManager::GetStates().front()->Render();
+
 	// Now render rest of PauseState
 	SDL_SetRenderDrawBlendMode(Game::GetInstance().GetRenderer(), SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 128, 128, 128, 128);
@@ -158,5 +203,35 @@ void WinScreen::Render()
 void WinScreen::Exit()
 {
 	std::cout << "Exiting Win Screen..." << std::endl;
+}
+// End of TitleState
+
+/////////////////////////////////////////////// Credits //////////////////////////////////////////////////////////
+
+// Title Finished
+void CreditScreen::Enter()
+{
+	std::cout << "Credit Screen activated!" << std::endl;
+}
+
+void CreditScreen::Update(float deltaTime)
+{
+	if (Game::GetInstance().KeyDown(SDL_SCANCODE_ESCAPE))
+	{
+		std::cout << "Moving back to Main Menu..." << std::endl;
+		StateManager::ChangeState(new MainMenuScreen()); // Change back to main menu
+	}
+}
+
+void CreditScreen::Render()
+{
+	std::cout << "Rolling Credits!" << std::endl;
+	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 255, 207, 241, 255); // Changes the color or the titleState
+	SDL_RenderClear(Game::GetInstance().GetRenderer());
+}
+
+void CreditScreen::Exit()
+{
+	std::cout << "Leaving the Main Menu..." << std::endl;
 }
 // End of TitleState

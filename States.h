@@ -33,6 +33,22 @@ public:
 
 ////////////////////////////////
 
+class MainMenuScreen : public State
+{
+
+private:
+
+public:
+	virtual void Enter() override;
+	virtual void Update(float deltaTime) override;
+	virtual void Render() override;
+	virtual void Exit() override;
+
+
+};
+
+////////////////////////////////
+
 class GameState : public State
 {
 	static const int kRectangleSpeed = 300;
@@ -55,6 +71,22 @@ public:
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
 	virtual void Exit() override;
+};
+
+////////////////////////////////
+
+class CreditScreen : public State
+{
+
+private:
+
+public:
+	virtual void Enter() override;
+	virtual void Update(float deltaTime) override;
+	virtual void Render() override;
+	virtual void Exit() override;
+
+
 };
 
 ////////////////////////////////
