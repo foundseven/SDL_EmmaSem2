@@ -54,6 +54,7 @@ public:
 
 class GameState : public State
 {
+	static const int kPlayerSpeed = 400;
 	std::vector<GameObject*> m_GameObjects;
 	GameObject* m_Player;
 

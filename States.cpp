@@ -108,24 +108,24 @@ void GameState::Update(float deltaTime)
 	{
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_W))
 		{
-			m_Player->UpdatePositionY(-100 * deltaTime);
+			m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
 			//m_RectangleTransform.y -= kRectangleSpeed * deltaTime;
 		}
 			
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_S))
 		{
-			m_Player->UpdatePositionY(100 * deltaTime);
+			m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
 			//m_RectangleTransform.y += kRectangleSpeed * deltaTime;
 		}
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_A))
 		{
-			m_Player->UpdatePositionX(-100 * deltaTime);
+			m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
 
 			//m_RectangleTransform.x -= kRectangleSpeed * deltaTime;
 		}
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_D))
 		{
-			m_Player->UpdatePositionX(100 * deltaTime);
+			m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
 				//m_RectangleTransform.x += kRectangleSpeed * deltaTime;
 		}
 			
