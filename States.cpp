@@ -138,7 +138,7 @@ void GameState::Resume()
 
 /////////////////////////////////////////////// PAUSESTATE ///////////////////////////////////////////////////////////
 
-// Begin of PauseState
+// Pause State is Finished
 void PauseState::Enter()
 {
 	std::cout << "Entering PauseState..." << std::endl;
@@ -205,7 +205,7 @@ void WinScreen::Exit()
 
 /////////////////////////////////////////////// Credits //////////////////////////////////////////////////////////
 
-// Title Finished
+// Credits Finished
 void CreditScreen::Enter()
 {
 	std::cout << "Credit Screen activated!" << std::endl;
@@ -231,4 +231,4 @@ void CreditScreen::Exit()
 {
 	std::cout << "Leaving the Main Menu..." << std::endl;
 }
-// End of TitleState
+// End of Credits
