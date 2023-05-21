@@ -1,5 +1,8 @@
 #pragma once
 #include <SDL.h>
+#include <vector>
+
+class GameObject;
 
 class State // This is the abstract base class for all states
 {
@@ -51,6 +54,9 @@ public:
 
 class GameState : public State
 {
+	std::vector<GameObject*> m_GameObjects;
+	GameObject* m_Player;
+
 	static const int kRectangleSpeed = 300;
 	SDL_FRect m_RectangleTransform;
 

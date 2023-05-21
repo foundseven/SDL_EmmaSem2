@@ -1,5 +1,6 @@
 #include "States.h"
 #include "Game.h"
+#include "GameObject.h"
 #include "StateManager.h"
 #include <iostream>
 
@@ -82,10 +83,13 @@ void GameState::Enter() // Used for initialization
 {
 	std::cout << "Entering GameState..." << std::endl;
 
-	m_RectangleTransform.x = Game::kWidth / 2;
-	m_RectangleTransform.y = Game::kHeight / 2;
-	m_RectangleTransform.w = 60;
-	m_RectangleTransform.h = 100;
+	m_GameObjects.push_back(new GameObject(100, 100, 30, 30));
+	m_GameObjects.push_back(new GameObject(400, 100, 30, 30));
+	m_GameObjects.push_back(new GameObject(700, 100, 30, 30));
+
+	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 100, 100, 200, 200, 200, 255);
+	m_GameObjects.push_back(m_Player);
+
 }
 
 void GameState::Update(float deltaTime)
@@ -103,13 +107,28 @@ void GameState::Update(float deltaTime)
 	else
 	{
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_W))
-			m_RectangleTransform.y -= kRectangleSpeed * deltaTime;
+		{
+			m_Player->UpdatePositionY(-100 * deltaTime);
+			//m_RectangleTransform.y -= kRectangleSpeed * deltaTime;
+		}
+			
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_S))
-			m_RectangleTransform.y += kRectangleSpeed * deltaTime;
+		{
+			m_Player->UpdatePositionY(100 * deltaTime);
+			//m_RectangleTransform.y += kRectangleSpeed * deltaTime;
+		}
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_A))
-			m_RectangleTransform.x -= kRectangleSpeed * deltaTime;
+		{
+			m_Player->UpdatePositionX(-100 * deltaTime);
+
+			//m_RectangleTransform.x -= kRectangleSpeed * deltaTime;
+		}
 		if (Game::GetInstance().KeyDown(SDL_SCANCODE_D))
-			m_RectangleTransform.x += kRectangleSpeed * deltaTime;
+		{
+			m_Player->UpdatePositionX(100 * deltaTime);
+				//m_RectangleTransform.x += kRectangleSpeed * deltaTime;
+		}
+			
 	}
 }
 
@@ -121,13 +140,22 @@ void GameState::Render()
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 0, 0, 255, 255); // Changes the color or the GameState
 	SDL_RenderClear(pRenderer);
 
-	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-	SDL_RenderFillRectF(pRenderer, &m_RectangleTransform);
+	for (GameObject* pObject : m_GameObjects)
+	{
+		pObject->Draw(pRenderer);
+	}
 }
 
 void GameState::Exit()
 {
 	std::cout << "Exiting GameState..." << std::endl;
+
+	for (GameObject* pObject : m_GameObjects)
+	{
+
+		delete pObject;
+		pObject = nullptr;
+	}
 }
 
 void GameState::Resume()
