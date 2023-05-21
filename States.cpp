@@ -211,10 +211,10 @@ void WinScreen::Enter()
 
 void WinScreen::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_N))
+	if (Game::GetInstance().KeyDown(SDL_SCANCODE_SPACE))
 	{
-		std::cout << "Changing to Win Screen" << std::endl;
-		StateManager::ChangeState(new GameState()); // Change to new GameState
+		std::cout << "Changing to Main Menu" << std::endl;
+		StateManager::ChangeState(new MainMenuScreen()); // Change to MM
 	}
 }
 
@@ -242,17 +242,17 @@ void LoseScreen::Enter()
 
 void LoseScreen::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_N))
+	if (Game::GetInstance().KeyDown(SDL_SCANCODE_SPACE))
 	{
-		std::cout << "Changing to Win Screen" << std::endl;
-		StateManager::ChangeState(new GameState()); // Change to new GameState
+		std::cout << "Changing to Main Menu" << std::endl;
+		StateManager::ChangeState(new MainMenuScreen()); // Change to MM
 	}
 }
 
 void LoseScreen::Render()
 {
-	std::cout << "Rendering Win Screen..." << std::endl;
-	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 230, 0, 0, 255); // Changes the color or the titleState
+	std::cout << "Rendering LoseScreen..." << std::endl;
+	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 230, 0, 0, 255); 
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 }
 
@@ -261,7 +261,7 @@ void LoseScreen::Exit()
 	std::cout << "Exiting Win Screen..." << std::endl;
 }
 // End of Lose Screen
-// 
+
 /////////////////////////////////////////////// Credits //////////////////////////////////////////////////////////
 
 // Credits Finished
