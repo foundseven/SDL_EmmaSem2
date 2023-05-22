@@ -11,6 +11,10 @@ public:
 	void Draw(SDL_Renderer* pRenderer);
 	void UpdatePositionX(float x);
 	void UpdatePositionY(float y);
+	SDL_FRect& GetTransform()
+	{
+		return m_Transform;
+	}
 
 private:
 	SDL_FRect m_Transform;

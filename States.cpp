@@ -2,7 +2,9 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "StateManager.h"
-#include <iostream>
+#include"CollisionManager.h"
+#include <Windows.h>
+
 
 
 /////////////////////////////////////////////// TITLESTATE //////////////////////////////////////////////////////////
@@ -27,7 +29,7 @@ void TitleState::Update(float deltaTime)
 
 void TitleState::Render()
 {
-	std::cout << "Rendering TitleState..." << std::endl;
+	//std::cout << "Rendering TitleState..." << std::endl;
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 254, 254, 34, 255); // Changes the color or the titleState
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 }
@@ -64,7 +66,7 @@ void MainMenuScreen::Update(float deltaTime)
 
 void MainMenuScreen::Render()
 {
-	std::cout << "Rendering Main Menu..." << std::endl;
+//	std::cout << "Rendering Main Menu..." << std::endl;
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 148, 0, 211, 255); // Changes the color or the titleState
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 }
@@ -84,7 +86,7 @@ void GameState::Enter() // Used for initialization
 	std::cout << "Entering GameState..." << std::endl;
 
 	m_GameObjects.push_back(new GameObject(100, 100, 30, 30));
-	m_GameObjects.push_back(new GameObject(400, 100, 30, 30));
+	m_GameObjects.push_back(new GameObject(400, 400, 30, 30));
 	m_GameObjects.push_back(new GameObject(700, 100, 30, 30));
 
 	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 100, 100, 200, 200, 200, 255);
@@ -128,13 +130,27 @@ void GameState::Update(float deltaTime)
 			m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
 				//m_RectangleTransform.x += kRectangleSpeed * deltaTime;
 		}
+
+		//check for collision
+
+		for (GameObject* pObject : m_GameObjects)
+		{
+			if (pObject != m_Player)
+			{
+				if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetTransform()))
+				{
+					std::cout << "Player hit!!" << std::endl;
+					
+				}
+			}
+		}
 			
 	}
 }
 
 void GameState::Render()
 {
-	std::cout << "Rendering GameState..." << std::endl;
+	//std::cout << "Rendering GameState..." << std::endl;
 	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
 
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 0, 0, 255, 255); // Changes the color or the GameState
@@ -184,7 +200,7 @@ void PauseState::Update(float deltaTime)
 
 void PauseState::Render()
 {
-	std::cout << "Rendering PauseState..." << std::endl;
+	//std::cout << "Rendering PauseState..." << std::endl;
 	// First render of the GameState
 	StateManager::GetStates().front()->Render();
 
@@ -220,7 +236,7 @@ void WinScreen::Update(float deltaTime)
 
 void WinScreen::Render()
 {
-	std::cout << "Rendering Win Screen..." << std::endl;
+	//std::cout << "Rendering Win Screen..." << std::endl;
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 0, 102, 34, 255); // Changes the color or the titleState
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 }
@@ -251,7 +267,7 @@ void LoseScreen::Update(float deltaTime)
 
 void LoseScreen::Render()
 {
-	std::cout << "Rendering LoseScreen..." << std::endl;
+	//std::cout << "Rendering LoseScreen..." << std::endl;
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 230, 0, 0, 255); 
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 }
@@ -281,7 +297,7 @@ void CreditScreen::Update(float deltaTime)
 
 void CreditScreen::Render()
 {
-	std::cout << "Rolling Credits!" << std::endl;
+	//std::cout << "Rolling Credits!" << std::endl;
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 255, 207, 241, 255); // Changes the color or the titleState
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 }
