@@ -83,6 +83,7 @@ void MainMenuScreen::Exit()
 // Begin of GameState
 void GameState::Enter() // Used for initialization
 {
+	startTime = SDL_GetTicks();
 	std::cout << "Entering GameState..." << std::endl;
 
 	m_GameObjects.push_back(new GameObject(100, 100, 30, 30));
@@ -135,6 +136,7 @@ void GameState::Update(float deltaTime)
 
 		for (GameObject* pObject : m_GameObjects)
 		{
+			
 			if (pObject != m_Player)
 			{
 				
@@ -142,6 +144,17 @@ void GameState::Update(float deltaTime)
 				{
 					std::cout << "Player hit!!" << std::endl;
 					StateManager::PushState(new LoseScreen()); //pushing to a new one rather than making it totally new 
+				}
+			}
+			else
+			{
+				Uint32 elapsedTime = SDL_GetTicks() - startTime;
+
+				if (elapsedTime >= 20000)
+				{
+					std::cout << "You Win!" << std::endl;
+
+					StateManager::PushState(new WinScreen());
 				}
 			}
 		}

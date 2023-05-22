@@ -60,6 +60,8 @@ class GameState : public State
 
 	static const int kRectangleSpeed = 300;
 	SDL_FRect m_RectangleTransform;
+private:
+	Uint32 startTime;
 
 public:
 	virtual void Enter() override;
