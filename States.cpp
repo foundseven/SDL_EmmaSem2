@@ -137,10 +137,11 @@ void GameState::Update(float deltaTime)
 		{
 			if (pObject != m_Player)
 			{
+				
 				if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetTransform()))
 				{
 					std::cout << "Player hit!!" << std::endl;
-					
+					StateManager::PushState(new LoseScreen()); //pushing to a new one rather than making it totally new 
 				}
 			}
 		}
@@ -274,7 +275,7 @@ void LoseScreen::Render()
 
 void LoseScreen::Exit()
 {
-	std::cout << "Exiting Win Screen..." << std::endl;
+	std::cout << "Exiting Lose Screen..." << std::endl;
 }
 // End of Lose Screen
 
