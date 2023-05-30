@@ -16,7 +16,7 @@ public:
 	bool KeyDown(SDL_Scancode key);
 	void Update(float deltaTime);
 	void Render();
-	void Clear();
+ 	void Clear();
 
 	SDL_Window* GetWindow() { return m_pWindow; }
 	SDL_Renderer* GetRenderer() { return m_pRenderer; }

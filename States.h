@@ -9,8 +9,8 @@ class AnimatedSprite;
 class State // This is the abstract base class for all states
 {
 public:
-	//State() = default;
-	//virtual ~State() = default; // Modern alternative to {}
+	State() = default;
+	virtual ~State() = default; // Modern alternative to {}
 
 	virtual void Enter() = 0; // 0 means pure virtual - must be defined in subclass
 	virtual void Update(float deltaTime) = 0;
@@ -28,6 +28,9 @@ private:
 	Uint32 startTime;
 
 public:
+
+	float elapsedTime;
+
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
@@ -56,23 +59,29 @@ public:
 
 class GameState : public State
 {
-	static const int kPlayerSpeed = 400;
+public:
+
+	static const int kPlayerSpeed = 300;
 	std::vector<AnimatedSprite*> m_GameObjects;
 	GameObject* m_Player;
+
 	SDL_Texture* m_pPlayerTexture;
 	SDL_Texture* m_pObjectTexture;
 
-	static const int kRectangleSpeed = 300;
-	SDL_FRect m_RectangleTransform;
-private:
-	Uint32 startTime;
+	SDL_Texture* m_pBackground;
 
-public:
+	float elapsedTime;
+
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
 	virtual void Exit() override;
 	virtual void Resume() override;
+
+
+private:
+	Uint32 startTime;
+
 };
 
 ////////////////////////////////

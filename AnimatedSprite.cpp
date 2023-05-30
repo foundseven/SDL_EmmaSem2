@@ -12,10 +12,12 @@ AnimatedSprite::AnimatedSprite(int angle, float frameRate, int maxSprite,
 void AnimatedSprite::Animate(float deltaTime)
 {
 	m_currentTime += deltaTime;
+
 	if (m_currentTime > m_frameRate)
 	{
 		m_currentTime = m_frameRate - m_currentTime;
 		m_currentSpriteIndex++;
+
 		if (m_currentSpriteIndex == m_maxSprite)
 		{
 			m_currentSpriteIndex = 0;

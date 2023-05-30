@@ -8,9 +8,9 @@ Sprite::Sprite()
 
 }
 
-Sprite::Sprite(SDL_Rect sourceTransform, SDL_FRect destinationTransform, int angle)
-	:m_sourceTransform{ sourceTransform }
-	, m_destinationTransform{ destinationTransform }
+Sprite::Sprite(SDL_Rect source, SDL_FRect destination, int angle)
+	:m_sourceTransform{ source }
+	, m_destinationTransform{ destination }
 	, m_angle{ angle }
 {
 

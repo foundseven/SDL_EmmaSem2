@@ -7,7 +7,6 @@ GameObject::GameObject(float x, float y, float w, float h,
 	, m_Color {r, g, b, a}
 {
 
-
 }
 void GameObject::Draw(SDL_Renderer* pRenderer)
 {

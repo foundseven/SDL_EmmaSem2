@@ -4,9 +4,9 @@
 class Sprite
 {
 protected:
-	SDL_Rect m_sourceTransform;
-	SDL_FRect m_destinationTransform;
-	int m_angle;
+	SDL_Rect m_sourceTransform; //source pixel from image
+	SDL_FRect m_destinationTransform; //destination window
+	int m_angle; //angle of sprite
 
 public:
 	Sprite();

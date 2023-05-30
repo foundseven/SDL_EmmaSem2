@@ -9,7 +9,6 @@ Game::Game()
 	: m_running(false)
 	, m_pWindow(nullptr)
 	, m_pRenderer(nullptr)
-	, m_RectangleTransform{ kWidth / 2,kHeight / 2, 100, 100 }
 	, m_keyStates(nullptr)
 {
 
@@ -17,8 +16,8 @@ Game::Game()
 
 Game& Game::GetInstance()
 {
-	static Game* instance = new Game();
-	return *instance;
+	static Game* pInstance = new Game();
+	return *pInstance;
 }
 
 bool Game::init(const char* title, int xPos, int yPos)
@@ -98,8 +97,11 @@ void Game::HandleEvents()
 			m_running = false;
 			break;
 		}
+		
 	}
 }
+
+
 
 //this is for our input
 bool Game::KeyDown(SDL_Scancode key)
@@ -122,14 +124,6 @@ void Game::Render()
 {
 	StateManager::Render();
 	SDL_RenderPresent(m_pRenderer); // Flip buffers - send data to window.
-
-	SDL_SetRenderDrawColor(m_pRenderer, 0, 128, 255, 255);
-	SDL_RenderClear(m_pRenderer);
-
-	// Any drawing here...
-
-	SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 255, 255);
-	SDL_RenderFillRectF(m_pRenderer, &m_RectangleTransform);
 
 }
 

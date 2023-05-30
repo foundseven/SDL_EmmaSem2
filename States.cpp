@@ -15,14 +15,15 @@
 void TitleState::Enter()
 {
 	std::cout << "TitleState activated!" << std::endl;
+	elapsedTime = 0.0f;
 	startTime = SDL_GetTicks();
 }
 
 void TitleState::Update(float deltaTime)
 {
-	Uint32 elapsedTime = SDL_GetTicks() - startTime;
+	elapsedTime += deltaTime;
 
-	if (elapsedTime >= 4000) 
+	if (elapsedTime >= 4.0f) 
 	{
 		std::cout << "Moving to GameState" << std::endl;
 		StateManager::ChangeState(new MainMenuScreen()); // Change to the menu after 4 seconds
@@ -53,13 +54,15 @@ void MainMenuScreen::Enter()
 
 void MainMenuScreen::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_G))
+	Game& GameInstance = Game::GetInstance();
+
+	if (GameInstance.KeyDown(SDL_SCANCODE_G))
 	{
 		std::cout << "Changing to GameState" << std::endl;
 		StateManager::ChangeState(new GameState()); // Change to GS
 	}
 
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_C))
+	if (GameInstance.KeyDown(SDL_SCANCODE_C))
 	{
 		std::cout << "Rolling credits!" << std::endl;
 		StateManager::ChangeState(new CreditScreen()); // Change to Credits
@@ -85,29 +88,29 @@ void MainMenuScreen::Exit()
 // Begin of GameState
 void GameState::Enter() // Used for initialization
 {
-	startTime = SDL_GetTicks();
+	//startTime = SDL_GetTicks();
 	std::cout << "Entering GameState..." << std::endl;
 
-	//m_GameObjects.push_back(new GameObject(100, 100, 30, 30));
-	//m_GameObjects.push_back(new GameObject(400, 400, 30, 30));
-	//m_GameObjects.push_back(new GameObject(700, 100, 30, 30));
+	elapsedTime = 0.0f;
 
 	SDL_Rect sourceTransform{ 0, 0, 64, 64 };
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform,{ 100, 100, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 400, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 100, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.5, 4, sourceTransform, { 400, 400, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.2, 4, sourceTransform, { 700, 100, 64, 64 }));
 
 
-	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 192, 48, 200, 200, 200, 255);
+	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 192, 48, 255, 255, 255, 255);
 
+	
 	m_pPlayerTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/Punk_idle.png");
-
 	m_pObjectTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/enemy_idle.png");
 
 }
 
-void GameState::Update([[maybe_unused]]float deltaTime)
+void GameState::Update(float deltaTime)
 {
+	elapsedTime += deltaTime;
+
 	Game& GameInstance = Game::GetInstance();
 
 	if (GameInstance.KeyDown(SDL_SCANCODE_M))
@@ -115,30 +118,30 @@ void GameState::Update([[maybe_unused]]float deltaTime)
 		std::cout << "Going back to the Main Menu" << std::endl;
 		StateManager::ChangeState(new TitleState()); // Change to new TitleState
 	}
-	else if (GameInstance.KeyDown(SDL_SCANCODE_P))
+	if (GameInstance.KeyDown(SDL_SCANCODE_P))
 	{
 		std::cout << "Changing to PauseState" << std::endl;
 		StateManager::PushState(new PauseState()); // Change to new PauseState
 	}
+	if (elapsedTime >= 10.0f)
+	{
+		std::cout << "You Win!" << std::endl;
+		StateManager::PushState(new WinScreen());
+	}
 	else
 	{
 		if (GameInstance.KeyDown(SDL_SCANCODE_W))
-		{
-			m_RectangleTransform.y -= kRectangleSpeed * deltaTime;
-		}
-		if (GameInstance.KeyDown(SDL_SCANCODE_S))
-		{
-			m_RectangleTransform.y += kRectangleSpeed * deltaTime;
-		}
-		if (GameInstance.KeyDown(SDL_SCANCODE_A))
-		{
-			m_RectangleTransform.x -= kRectangleSpeed * deltaTime;
-		}
-		if (GameInstance.KeyDown(SDL_SCANCODE_D))
-		{
-			m_RectangleTransform.x += kRectangleSpeed * deltaTime;
-		}
+			m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
 
+		if (GameInstance.KeyDown(SDL_SCANCODE_S))
+			m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
+
+		if (GameInstance.KeyDown(SDL_SCANCODE_A))
+			m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
+
+		if (GameInstance.KeyDown(SDL_SCANCODE_D))
+			m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
+	}
 		//updating the animation
 		for (AnimatedSprite* pObject : m_GameObjects)
 		{
@@ -146,42 +149,19 @@ void GameState::Update([[maybe_unused]]float deltaTime)
 		}
 
 		//check for collision
-
-		for (std::vector<AnimatedSprite*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); )
+		for (AnimatedSprite* pObject : m_GameObjects)
 		{
-
-			AnimatedSprite* pObject = (*it);
-			
-			//if (pObject != m_Player)
-				
 			if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
 			{
-				std::cout << "Player hit!!" << std::endl;
-				it = m_GameObjects.erase(it);
-				delete pObject;
-				pObject = nullptr;
-				StateManager::PushState(new LoseScreen()); //pushing to a new one rather than making it totally new 
+				std::cout << "L! You LOSE!" << std::endl;
+				StateManager::PushState(new LoseScreen()); // Change to new LoseState
 			}
-			
-			else
-			{
-				Uint32 elapsedTime = SDL_GetTicks() - startTime;
 
-				if (elapsedTime >= 20000)
-				{
-					std::cout << "You Win!" << std::endl;
-					it++;
-					StateManager::PushState(new WinScreen());
-				}
-			}
 		}
-			
-	}
 }
-
 void GameState::Render()
 {
-	std::cout << "Rendering GameState..." << std::endl;
+	//std::cout << "Rendering GameState..." << std::endl;
 	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
 
 	SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255); // Changes the color or the GameState
@@ -189,7 +169,6 @@ void GameState::Render()
 
 	for (AnimatedSprite* pObject : m_GameObjects)
 	{
-		
 		{
 			//pObject->Draw(pRenderer);
 			SDL_FPoint pivot = { 0, 0 };
@@ -209,7 +188,6 @@ void GameState::Exit()
 
 	for (AnimatedSprite* pObject : m_GameObjects)
 	{
-
 		delete pObject;
 		pObject = nullptr;
 	}
