@@ -115,15 +115,6 @@ bool Game::KeyDown(SDL_Scancode key)
 void Game::Update(float deltaTime)
 {
 	StateManager::Update(deltaTime);
-
-	if (KeyDown(SDL_SCANCODE_W))
-		m_RectangleTransform.y -= kRectangleSpeed * deltaTime;
-	if (KeyDown(SDL_SCANCODE_S))
-		m_RectangleTransform.y += kRectangleSpeed * deltaTime;
-	if (KeyDown(SDL_SCANCODE_A))
-		m_RectangleTransform.x -= kRectangleSpeed * deltaTime;
-	if (KeyDown(SDL_SCANCODE_D))
-		m_RectangleTransform.x += kRectangleSpeed * deltaTime;
 }
 
 //this is just drawing it all to the screen

@@ -1,6 +1,7 @@
 #include "States.h"
 #include "Game.h"
 #include "GameObject.h"
+#include "AnimatedSprite.h"
 #include "StateManager.h"
 #include"CollisionManager.h"
 #include <Windows.h>
@@ -87,77 +88,81 @@ void GameState::Enter() // Used for initialization
 	startTime = SDL_GetTicks();
 	std::cout << "Entering GameState..." << std::endl;
 
-	m_GameObjects.push_back(new GameObject(100, 100, 30, 30));
-	m_GameObjects.push_back(new GameObject(400, 400, 30, 30));
-	m_GameObjects.push_back(new GameObject(700, 100, 30, 30));
+	//m_GameObjects.push_back(new GameObject(100, 100, 30, 30));
+	//m_GameObjects.push_back(new GameObject(400, 400, 30, 30));
+	//m_GameObjects.push_back(new GameObject(700, 100, 30, 30));
+
+	SDL_Rect sourceTransform{ 0, 0, 64, 64 };
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform,{ 100, 100, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 400, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 100, 64, 64 }));
+
 
 	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 192, 48, 200, 200, 200, 255);
-	m_GameObjects.push_back(m_Player);
 
-	SDL_Surface* pImageSurface = IMG_Load("assets/Punk_idle.png");
-	if (pImageSurface == nullptr)
-	{
-		std::cout << "Image failed to load! Error: " << SDL_GetError() << std::endl;
-		
-	}
-	else
-	{
-		m_pPlayerTexture = SDL_CreateTextureFromSurface(Game::GetInstance().GetRenderer(), pImageSurface);
-		SDL_FreeSurface(pImageSurface);
-	}
+	m_pPlayerTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/Punk_idle.png");
+
+	m_pObjectTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/enemy_idle.png");
+
 }
 
-void GameState::Update(float deltaTime)
+void GameState::Update([[maybe_unused]]float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_M))
+	Game& GameInstance = Game::GetInstance();
+
+	if (GameInstance.KeyDown(SDL_SCANCODE_M))
 	{
 		std::cout << "Going back to the Main Menu" << std::endl;
 		StateManager::ChangeState(new TitleState()); // Change to new TitleState
 	}
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_P))
+	else if (GameInstance.KeyDown(SDL_SCANCODE_P))
 	{
 		std::cout << "Changing to PauseState" << std::endl;
 		StateManager::PushState(new PauseState()); // Change to new PauseState
 	}
 	else
 	{
-		if (Game::GetInstance().KeyDown(SDL_SCANCODE_W))
+		if (GameInstance.KeyDown(SDL_SCANCODE_W))
 		{
-			m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
-			//m_RectangleTransform.y -= kRectangleSpeed * deltaTime;
+			m_RectangleTransform.y -= kRectangleSpeed * deltaTime;
 		}
-			
-		if (Game::GetInstance().KeyDown(SDL_SCANCODE_S))
+		if (GameInstance.KeyDown(SDL_SCANCODE_S))
 		{
-			m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
-			//m_RectangleTransform.y += kRectangleSpeed * deltaTime;
+			m_RectangleTransform.y += kRectangleSpeed * deltaTime;
 		}
-		if (Game::GetInstance().KeyDown(SDL_SCANCODE_A))
+		if (GameInstance.KeyDown(SDL_SCANCODE_A))
 		{
-			m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
+			m_RectangleTransform.x -= kRectangleSpeed * deltaTime;
+		}
+		if (GameInstance.KeyDown(SDL_SCANCODE_D))
+		{
+			m_RectangleTransform.x += kRectangleSpeed * deltaTime;
+		}
 
-			//m_RectangleTransform.x -= kRectangleSpeed * deltaTime;
-		}
-		if (Game::GetInstance().KeyDown(SDL_SCANCODE_D))
+		//updating the animation
+		for (AnimatedSprite* pObject : m_GameObjects)
 		{
-			m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
-				//m_RectangleTransform.x += kRectangleSpeed * deltaTime;
+			pObject->Animate(deltaTime);
 		}
 
 		//check for collision
 
-		for (GameObject* pObject : m_GameObjects)
+		for (std::vector<AnimatedSprite*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); )
 		{
+
+			AnimatedSprite* pObject = (*it);
 			
-			if (pObject != m_Player)
-			{
+			//if (pObject != m_Player)
 				
-				if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetTransform()))
-				{
-					std::cout << "Player hit!!" << std::endl;
-					StateManager::PushState(new LoseScreen()); //pushing to a new one rather than making it totally new 
-				}
+			if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
+			{
+				std::cout << "Player hit!!" << std::endl;
+				it = m_GameObjects.erase(it);
+				delete pObject;
+				pObject = nullptr;
+				StateManager::PushState(new LoseScreen()); //pushing to a new one rather than making it totally new 
 			}
+			
 			else
 			{
 				Uint32 elapsedTime = SDL_GetTicks() - startTime;
@@ -165,7 +170,7 @@ void GameState::Update(float deltaTime)
 				if (elapsedTime >= 20000)
 				{
 					std::cout << "You Win!" << std::endl;
-
+					it++;
 					StateManager::PushState(new WinScreen());
 				}
 			}
@@ -176,19 +181,24 @@ void GameState::Update(float deltaTime)
 
 void GameState::Render()
 {
-	//std::cout << "Rendering GameState..." << std::endl;
+	std::cout << "Rendering GameState..." << std::endl;
 	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
 
-	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 0, 0, 255, 255); // Changes the color or the GameState
+	SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255); // Changes the color or the GameState
 	SDL_RenderClear(pRenderer);
 
-	for (GameObject* pObject : m_GameObjects)
+	for (AnimatedSprite* pObject : m_GameObjects)
 	{
-		if (pObject != m_Player)
+		
 		{
-			pObject->Draw(pRenderer);
+			//pObject->Draw(pRenderer);
+			SDL_FPoint pivot = { 0, 0 };
+			SDL_RenderCopyExF(pRenderer, m_pObjectTexture, &(pObject->GetSourceTransform())
+				, &(pObject->GetDestinationTransform())
+				, (pObject->GetAngle()), &pivot, SDL_FLIP_NONE);
 		}
 	}
+
 	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
 	SDL_RenderCopy(pRenderer, m_pPlayerTexture, nullptr, &playerIntRect);
 }
@@ -197,14 +207,18 @@ void GameState::Exit()
 {
 	std::cout << "Exiting GameState..." << std::endl;
 
-	for (GameObject* pObject : m_GameObjects)
+	for (AnimatedSprite* pObject : m_GameObjects)
 	{
 
 		delete pObject;
 		pObject = nullptr;
 	}
 
+	delete m_Player;
+	m_Player = nullptr;
+
 	SDL_DestroyTexture(m_pPlayerTexture);
+	SDL_DestroyTexture(m_pObjectTexture);
 }
 
 void GameState::Resume()

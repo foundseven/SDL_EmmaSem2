@@ -4,6 +4,7 @@
 #include <vector>
 
 class GameObject;
+class AnimatedSprite;
 
 class State // This is the abstract base class for all states
 {
@@ -56,9 +57,10 @@ public:
 class GameState : public State
 {
 	static const int kPlayerSpeed = 400;
-	std::vector<GameObject*> m_GameObjects;
+	std::vector<AnimatedSprite*> m_GameObjects;
 	GameObject* m_Player;
 	SDL_Texture* m_pPlayerTexture;
+	SDL_Texture* m_pObjectTexture;
 
 	static const int kRectangleSpeed = 300;
 	SDL_FRect m_RectangleTransform;
