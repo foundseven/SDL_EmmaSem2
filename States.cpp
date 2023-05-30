@@ -6,6 +6,8 @@
 #include"CollisionManager.h"
 #include <Windows.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
+
 
 
 
@@ -95,15 +97,19 @@ void GameState::Enter() // Used for initialization
 
 	SDL_Rect sourceTransform{ 0, 0, 64, 64 };
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform,{ 100, 100, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.5, 4, sourceTransform, { 400, 400, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.2, 4, sourceTransform, { 700, 100, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 400, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 100, 64, 64 }));
 
 
 	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 192, 48, 255, 255, 255, 255);
 
-	
+	m_pBackground = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/background.png");
 	m_pPlayerTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/Punk_idle.png");
 	m_pObjectTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/enemy_idle.png");
+
+	m_pMusic = Mix_LoadMUS("assets/citybackground.mp3");
+
+	Mix_PlayMusic(m_pMusic, -1);
 
 }
 
@@ -195,8 +201,12 @@ void GameState::Exit()
 	delete m_Player;
 	m_Player = nullptr;
 
+	SDL_DestroyTexture(m_pBackground);
 	SDL_DestroyTexture(m_pPlayerTexture);
 	SDL_DestroyTexture(m_pObjectTexture);
+
+	Mix_FreeMusic(m_pMusic);
+	m_pMusic = nullptr;
 }
 
 void GameState::Resume()

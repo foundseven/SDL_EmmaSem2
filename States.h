@@ -2,6 +2,10 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <vector>
+#include <SDL_mixer.h>
+#include "GameObject.h"
+#include "AnimatedSprite.h"
+
 
 class GameObject;
 class AnimatedSprite;
@@ -9,8 +13,8 @@ class AnimatedSprite;
 class State // This is the abstract base class for all states
 {
 public:
-	State() = default;
-	virtual ~State() = default; // Modern alternative to {}
+	//State() = default;
+	//virtual ~State() = default; // Modern alternative to {}
 
 	virtual void Enter() = 0; // 0 means pure virtual - must be defined in subclass
 	virtual void Update(float deltaTime) = 0;
@@ -67,8 +71,9 @@ public:
 
 	SDL_Texture* m_pPlayerTexture;
 	SDL_Texture* m_pObjectTexture;
-
 	SDL_Texture* m_pBackground;
+
+	Mix_Music* m_pMusic;
 
 	float elapsedTime;
 
