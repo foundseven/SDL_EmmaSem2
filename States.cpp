@@ -55,6 +55,13 @@ void MainMenuScreen::Enter()
 
 void MainMenuScreen::Update(float deltaTime)
 {
+	m_mMBack = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/mainmenubackground.png");
+	if (!m_mMBack)
+	{
+		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
+
+	}
+
 	Game& GameInstance = Game::GetInstance();
 
 	if (GameInstance.KeyDown(SDL_SCANCODE_G))
@@ -73,13 +80,21 @@ void MainMenuScreen::Update(float deltaTime)
 void MainMenuScreen::Render()
 {
 //	std::cout << "Rendering Main Menu..." << std::endl;
-	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 148, 0, 211, 255); // Changes the color or the titleState
-	SDL_RenderClear(Game::GetInstance().GetRenderer());
+	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
+
+	//for background
+	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
+	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); // Set the clear color (black)
+	SDL_RenderClear(pRenderer);
+	SDL_RenderCopy(pRenderer, m_mMBack, nullptr, nullptr);
 }
 
 void MainMenuScreen::Exit()
 {
 	std::cout << "Exiting Main Menu" << std::endl;
+
+	SDL_DestroyTexture(m_mMBack);
+
 }
 // End of TitleState
 
@@ -100,7 +115,7 @@ void GameState::Enter() // Used for initialization
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));
 
 
-	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255);
+	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
 
 
 	m_backgroundTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/background_far.png");

@@ -56,6 +56,9 @@ public:
 	virtual void Render() override;
 	virtual void Exit() override;
 
+	SDL_Texture* m_mMBack;
+
+
 
 };
 
