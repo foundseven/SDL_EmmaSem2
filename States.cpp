@@ -4,7 +4,7 @@
 #include "StateManager.h"
 #include"CollisionManager.h"
 #include <Windows.h>
-#include "SDL_image.h"
+#include <SDL_image.h>
 
 
 
@@ -91,7 +91,7 @@ void GameState::Enter() // Used for initialization
 	m_GameObjects.push_back(new GameObject(400, 400, 30, 30));
 	m_GameObjects.push_back(new GameObject(700, 100, 30, 30));
 
-	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 100, 100, 200, 200, 200, 255);
+	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 192, 48, 200, 200, 200, 255);
 	m_GameObjects.push_back(m_Player);
 
 	SDL_Surface* pImageSurface = IMG_Load("assets/Punk_idle.png");
@@ -102,7 +102,8 @@ void GameState::Enter() // Used for initialization
 	}
 	else
 	{
-		m_PlayerTexture = SDL_GetTextureFromSurface(pRed);
+		m_pPlayerTexture = SDL_CreateTextureFromSurface(Game::GetInstance().GetRenderer(), pImageSurface);
+		SDL_FreeSurface(pImageSurface);
 	}
 }
 
@@ -183,8 +184,13 @@ void GameState::Render()
 
 	for (GameObject* pObject : m_GameObjects)
 	{
-		pObject->Draw(pRenderer);
+		if (pObject != m_Player)
+		{
+			pObject->Draw(pRenderer);
+		}
 	}
+	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
+	SDL_RenderCopy(pRenderer, m_pPlayerTexture, nullptr, &playerIntRect);
 }
 
 void GameState::Exit()
@@ -197,6 +203,8 @@ void GameState::Exit()
 		delete pObject;
 		pObject = nullptr;
 	}
+
+	SDL_DestroyTexture(m_pPlayerTexture);
 }
 
 void GameState::Resume()

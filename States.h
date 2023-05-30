@@ -58,7 +58,7 @@ class GameState : public State
 	static const int kPlayerSpeed = 400;
 	std::vector<GameObject*> m_GameObjects;
 	GameObject* m_Player;
-	SDL_Texture* m_PlayerTexture;
+	SDL_Texture* m_pPlayerTexture;
 
 	static const int kRectangleSpeed = 300;
 	SDL_FRect m_RectangleTransform;
