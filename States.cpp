@@ -4,6 +4,7 @@
 #include "StateManager.h"
 #include"CollisionManager.h"
 #include <Windows.h>
+#include "SDL_image.h"
 
 
 
@@ -93,6 +94,16 @@ void GameState::Enter() // Used for initialization
 	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 100, 100, 200, 200, 200, 255);
 	m_GameObjects.push_back(m_Player);
 
+	SDL_Surface* pImageSurface = IMG_Load("assets/Punk_idle.png");
+	if (pImageSurface == nullptr)
+	{
+		std::cout << "Image failed to load! Error: " << SDL_GetError() << std::endl;
+		
+	}
+	else
+	{
+		m_PlayerTexture = SDL_GetTextureFromSurface(pRed);
+	}
 }
 
 void GameState::Update(float deltaTime)
