@@ -71,7 +71,7 @@ public:
 
 	SDL_Texture* m_pPlayerTexture;
 	SDL_Texture* m_pObjectTexture;
-	SDL_Texture* m_pBackground;
+	SDL_Texture* m_backgroundTexture;
 
 	Mix_Music* m_pMusic;
 
