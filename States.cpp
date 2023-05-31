@@ -4,6 +4,7 @@
 #include "AnimatedSprite.h"
 #include "StateManager.h"
 #include"CollisionManager.h"
+#include "TextureManager.h"
 #include <Windows.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -26,12 +27,11 @@ void TitleState::Update(float deltaTime)
 	if (!m_titleScreen)
 	{
 		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
-
 	}
 
 	elapsedTime += deltaTime;
 
-	if (elapsedTime >= 4.0f) 
+	if (elapsedTime >= 4.0f)
 	{
 		std::cout << "Moving to GameState" << std::endl;
 		StateManager::ChangeState(new MainMenuScreen()); // Change to the menu after 4 seconds
@@ -47,7 +47,7 @@ void TitleState::Render()
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 254, 254, 34, 255); // Changes the color or the titleState
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
-	
+
 	SDL_RenderCopy(pRenderer, m_titleScreen, nullptr, nullptr);
 }
 
@@ -65,29 +65,34 @@ void TitleState::Exit()
 void MainMenuScreen::Enter()
 {
 	std::cout << "Going to Main Menu..." << std::endl;
-	
+
 }
 
 void MainMenuScreen::Update(float deltaTime)
 {
+	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
+
 	m_mMBack = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/mainmenubackground.png");
 	if (!m_mMBack)
 	{
 		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
 
 	}
-	m_mMInstruct = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/mm_instruct.png");
-	if (!m_mMInstruct)
-	{
-		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
+	TextureManager::Load("assets/mm_instruct.png", "instructTexture");
+	TextureManager::Load("assets/mm_logo.png", "mMLogoTexture");
+	SDL_Rect rect;
+	SDL_FRect frect;
 
-	}
-	m_mMLogo = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/mm_logo.png");
-	if (!m_mMLogo)
-	{
-		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
+	SDL_QueryTexture(TextureManager::GetTexture("instructTexture"), NULL, NULL, &rect.w, &rect.h);
+	rect.x = 0;
+	rect.y = 0;
 
-	}
+	frect.x = 0;
+	frect.y = 0;
+	frect.w = rect.w;
+	frect.h = rect.h;
+
+
 
 	Game& GameInstance = Game::GetInstance();
 
@@ -106,7 +111,7 @@ void MainMenuScreen::Update(float deltaTime)
 
 void MainMenuScreen::Render()
 {
-//	std::cout << "Rendering Main Menu..." << std::endl;
+	//	std::cout << "Rendering Main Menu..." << std::endl;
 	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
 
 	//for background
@@ -116,6 +121,10 @@ void MainMenuScreen::Render()
 	SDL_RenderCopy(pRenderer, m_mMBack, nullptr, nullptr);
 	SDL_RenderCopy(pRenderer, m_mMInstruct, nullptr, nullptr);
 	SDL_RenderCopy(pRenderer, m_mMLogo, nullptr, nullptr);
+
+	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
+	SDL_RenderCopy(pRenderer, TextureManager::GetTexture("instructTexture"), nullptr, &playerIntRect);
+
 }
 
 
@@ -142,7 +151,7 @@ void GameState::Enter() // Used for initialization
 	elapsedTime = 0.0f;
 
 	SDL_Rect sourceTransform{ 0, 0, 64, 64 };
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform,{ 100, 500, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 100, 500, 64, 64 }));
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 500, 64, 64 }));
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));
 
@@ -151,14 +160,17 @@ void GameState::Enter() // Used for initialization
 
 
 	m_backgroundTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/background_far.png");
-	if ( !m_backgroundTexture )
+	if (!m_backgroundTexture)
 	{
 		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
 
 	}
+	TextureManager::Load("assets/punk.png", "playerTexture");
+	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
+	SDL_Rect rect;
+	SDL_FRect frect;
 
-	m_pPlayerTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/punk.png");
-	m_pObjectTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/enemy_idle.png");
+	//SDL_QueryTexture(TextureManager::GetTexture());
 
 	m_pMusic = Mix_LoadMUS("assets/citybackground.mp3");
 
@@ -201,24 +213,24 @@ void GameState::Update(float deltaTime)
 		if (GameInstance.KeyDown(SDL_SCANCODE_D))
 			m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
 	}
-		//updating the animation
-		for (AnimatedSprite* pObject : m_GameObjects)
+	//updating the animation
+	for (AnimatedSprite* pObject : m_GameObjects)
+	{
+		pObject->Animate(deltaTime);
+	}
+
+	//check for collision
+	for (AnimatedSprite* pObject : m_GameObjects)
+	{
+		if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
 		{
-			pObject->Animate(deltaTime);
+			std::cout << "L! You LOSE!" << std::endl;
+			StateManager::PushState(new LoseScreen()); // Change to new LoseState
 		}
 
-		//check for collision
-		for (AnimatedSprite* pObject : m_GameObjects)
-		{
-			if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
-			{
-				std::cout << "L! You LOSE!" << std::endl;
-				StateManager::PushState(new LoseScreen()); // Change to new LoseState
-			}
+	}
 
-		}
 
-		
 }
 
 void GameState::Render()
@@ -237,14 +249,14 @@ void GameState::Render()
 		{
 			//pObject->Draw(pRenderer);
 			SDL_FPoint pivot = { 0, 0 };
-			SDL_RenderCopyExF(pRenderer, m_pObjectTexture, &(pObject->GetSourceTransform())
+			SDL_RenderCopyExF(pRenderer, TextureManager::GetTexture("enemyTexture"), &(pObject->GetSourceTransform())
 				, &(pObject->GetDestinationTransform())
 				, (pObject->GetAngle()), &pivot, SDL_FLIP_NONE);
 		}
 	}
 
 	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
-	SDL_RenderCopy(pRenderer, m_pPlayerTexture, nullptr, &playerIntRect);
+	SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
 
 	SDL_RenderPresent(pRenderer);
 }
@@ -291,7 +303,7 @@ void PauseState::Update(float deltaTime)
 		std::cout << "Moving back to the Game State..." << std::endl;
 		StateManager::PopState(); // Change to new PauseState
 	}
-	
+
 }
 
 void PauseState::Render()
@@ -364,7 +376,7 @@ void LoseScreen::Update(float deltaTime)
 void LoseScreen::Render()
 {
 	//std::cout << "Rendering LoseScreen..." << std::endl;
-	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 230, 0, 0, 255); 
+	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 230, 0, 0, 255);
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 }
 

@@ -9,6 +9,8 @@
 
 class GameObject;
 class AnimatedSprite;
+class TiledLevel;
+
 
 class State // This is the abstract base class for all states
 {
@@ -57,6 +59,7 @@ public:
 	virtual void Render() override;
 	virtual void Exit() override;
 
+	GameObject* m_Player;
 	SDL_Texture* m_mMBack;
 	SDL_Texture* m_mMInstruct;
 	SDL_Texture* m_mMLogo;
@@ -74,6 +77,7 @@ public:
 
 	static const int kPlayerSpeed = 300;
 	std::vector<AnimatedSprite*> m_GameObjects;
+	TiledLevel* m_pLevel;
 	GameObject* m_Player;
 
 	SDL_Texture* m_pPlayerTexture;

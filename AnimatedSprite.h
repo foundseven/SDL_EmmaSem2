@@ -1,15 +1,24 @@
 #pragma once
 #include "Sprite.h"
-class AnimatedSprite : public Sprite
+class AnimatedSpriteObject : public SpriteObject
 {
+public:
+	virtual void Render() = 0;
+
 protected:
 	int m_currentSpriteIndex;
-	int m_maxSprite;
+	int m_startingSpriteIndex;
+	int m_totalSprite;
+
+
 	float m_currentTime;
 	float m_frameRate;
 
-public:
-	AnimatedSprite(int angle, float frameRate, int maxSprite, SDL_Rect sourceTransform, SDL_FRect destinationTransform);
-	void Animate(float deltaTime);
+protected:
+	AnimatedSpriteObject(const SDL_Rect source, const SDL_FRect destination);
+
+	void SetAnimation(float frameRate, int startingSpriteIndex, int totalSprites, int sourceY = 0);
+
+	virtual void Update(float deltaTime) override;
 };
 

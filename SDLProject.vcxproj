@@ -169,25 +169,33 @@ xcopy "$(ProjectDir)assets" "$(OutDir)assets" /s /e /i /y</Command>
   <ItemGroup>
     <ClInclude Include="AnimatedSprite.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="MathManager.h" />
+    <ClInclude Include="PlatformingPlayer.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="States.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Tile.h" />
+    <ClInclude Include="TiledLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimatedSprite.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MathManager.cpp" />
+    <ClCompile Include="PlatformingPlayer.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="States.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="TiledLevel.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
