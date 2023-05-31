@@ -5,6 +5,10 @@
 #include "StateManager.h"
 #include"CollisionManager.h"
 #include "TextureManager.h"
+#include "TiledLevel.h"
+#include "EventManager.h"
+
+#include <iostream>
 #include <Windows.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -78,6 +82,7 @@ void MainMenuScreen::Update(float deltaTime)
 		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
 
 	}
+
 	TextureManager::Load("assets/mm_instruct.png", "instructTexture");
 	TextureManager::Load("assets/mm_logo.png", "mMLogoTexture");
 	SDL_Rect rect;
@@ -91,18 +96,19 @@ void MainMenuScreen::Update(float deltaTime)
 	frect.y = 0;
 	frect.w = rect.w;
 	frect.h = rect.h;
-
+	//m_mMInstruct = new GameObject(rect, frect);
 
 
 	Game& GameInstance = Game::GetInstance();
+	////////////////////////////////////////////
 
-	if (GameInstance.KeyDown(SDL_SCANCODE_G))
+	if (EventManager::KeyPressed(SDL_SCANCODE_G))
 	{
 		std::cout << "Changing to GameState" << std::endl;
 		StateManager::ChangeState(new GameState()); // Change to GS
 	}
 
-	if (GameInstance.KeyDown(SDL_SCANCODE_C))
+	if (EventManager::KeyPressed(SDL_SCANCODE_C))
 	{
 		std::cout << "Rolling credits!" << std::endl;
 		StateManager::ChangeState(new CreditScreen()); // Change to Credits
@@ -122,8 +128,8 @@ void MainMenuScreen::Render()
 	SDL_RenderCopy(pRenderer, m_mMInstruct, nullptr, nullptr);
 	SDL_RenderCopy(pRenderer, m_mMLogo, nullptr, nullptr);
 
-	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
-	SDL_RenderCopy(pRenderer, TextureManager::GetTexture("instructTexture"), nullptr, &playerIntRect);
+	//SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
+	//SDL_RenderCopy(pRenderer, TextureManager::GetTexture("instructTexture"), nullptr, &playerIntRect);
 
 }
 
@@ -151,12 +157,12 @@ void GameState::Enter() // Used for initialization
 	elapsedTime = 0.0f;
 
 	SDL_Rect sourceTransform{ 0, 0, 64, 64 };
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 100, 500, 64, 64 }));
+	/*m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform,{ 100, 500, 64, 64 }));
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 500, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));*/
 
 
-	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
+	//m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
 
 
 	m_backgroundTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/background_far.png");
@@ -184,12 +190,12 @@ void GameState::Update(float deltaTime)
 
 	Game& GameInstance = Game::GetInstance();
 
-	if (GameInstance.KeyDown(SDL_SCANCODE_M))
+	if (EventManager::KeyPressed(SDL_SCANCODE_M))
 	{
 		std::cout << "Going back to the Main Menu" << std::endl;
 		StateManager::ChangeState(new TitleState()); // Change to new TitleState
 	}
-	if (GameInstance.KeyDown(SDL_SCANCODE_P))
+	if (EventManager::KeyPressed(SDL_SCANCODE_P))
 	{
 		std::cout << "Changing to PauseState" << std::endl;
 		StateManager::PushState(new PauseState()); // Change to new PauseState
@@ -199,38 +205,36 @@ void GameState::Update(float deltaTime)
 		std::cout << "You Win!" << std::endl;
 		StateManager::PushState(new WinScreen());
 	}
-	else
-	{
-		if (GameInstance.KeyDown(SDL_SCANCODE_W))
-			m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
+	//else
+	//{
+	//	if (EventManager::KeyPressed(SDL_SCANCODE_W))
+	//		m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
 
-		if (GameInstance.KeyDown(SDL_SCANCODE_S))
-			m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
+	//	if (EventManager::KeyPressed(SDL_SCANCODE_S))
+	//		m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
 
-		if (GameInstance.KeyDown(SDL_SCANCODE_A))
-			m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
+	//	if (EventManager::KeyPressed(SDL_SCANCODE_A))
+	//		m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
 
-		if (GameInstance.KeyDown(SDL_SCANCODE_D))
-			m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
-	}
-	//updating the animation
-	for (AnimatedSprite* pObject : m_GameObjects)
-	{
-		pObject->Animate(deltaTime);
-	}
+	//	if (EventManager::KeyPressed(SDL_SCANCODE_D))
+	//		m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
+	//}
+	//	//updating the animation
+	//	for (AnimatedSprite* pObject : m_GameObjects)
+	//	{
+	//		pObject->Animate(deltaTime);
+	//	}
 
-	//check for collision
-	for (AnimatedSprite* pObject : m_GameObjects)
-	{
-		if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
-		{
-			std::cout << "L! You LOSE!" << std::endl;
-			StateManager::PushState(new LoseScreen()); // Change to new LoseState
-		}
+	//	//check for collision
+	//	for (AnimatedSprite* pObject : m_GameObjects)
+	//	{
+	//		if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
+	//		{
+	//			std::cout << "L! You LOSE!" << std::endl;
+	//			StateManager::PushState(new LoseScreen()); // Change to new LoseState
+	//		}
 
-	}
-
-
+	//	}		
 }
 
 void GameState::Render()
@@ -244,19 +248,19 @@ void GameState::Render()
 	SDL_RenderClear(pRenderer);
 	SDL_RenderCopy(pRenderer, m_backgroundTexture, nullptr, nullptr);
 
-	for (AnimatedSprite* pObject : m_GameObjects)
-	{
-		{
-			//pObject->Draw(pRenderer);
-			SDL_FPoint pivot = { 0, 0 };
-			SDL_RenderCopyExF(pRenderer, TextureManager::GetTexture("enemyTexture"), &(pObject->GetSourceTransform())
-				, &(pObject->GetDestinationTransform())
-				, (pObject->GetAngle()), &pivot, SDL_FLIP_NONE);
-		}
-	}
+	//for (AnimatedSprite* pObject : m_GameObjects)
+	//{
+	//	{
+	//		//pObject->Draw(pRenderer);
+	//		SDL_FPoint pivot = { 0, 0 };
+	//		SDL_RenderCopyExF(pRenderer, TextureManager::GetTexture("enemyTexture"), &(pObject->GetSourceTransform())
+	//			, &(pObject->GetDestinationTransform())
+	//			, (pObject->GetAngle()), &pivot, SDL_FLIP_NONE);
+	//	}
+	//}
 
-	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
-	SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
+	//SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
+	//SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
 
 	SDL_RenderPresent(pRenderer);
 }
@@ -298,7 +302,7 @@ void PauseState::Enter()
 
 void PauseState::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_ESCAPE))
+	if (EventManager::KeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		std::cout << "Moving back to the Game State..." << std::endl;
 		StateManager::PopState(); // Change to new PauseState
@@ -335,7 +339,7 @@ void WinScreen::Enter()
 
 void WinScreen::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_SPACE))
+	if (EventManager::KeyPressed(SDL_SCANCODE_SPACE))
 	{
 		std::cout << "Changing to Main Menu" << std::endl;
 		StateManager::ChangeState(new MainMenuScreen()); // Change to MM
@@ -366,7 +370,7 @@ void LoseScreen::Enter()
 
 void LoseScreen::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_SPACE))
+	if (EventManager::KeyPressed(SDL_SCANCODE_SPACE))
 	{
 		std::cout << "Changing to Main Menu" << std::endl;
 		StateManager::ChangeState(new MainMenuScreen()); // Change to MM
@@ -396,7 +400,7 @@ void CreditScreen::Enter()
 
 void CreditScreen::Update(float deltaTime)
 {
-	if (Game::GetInstance().KeyDown(SDL_SCANCODE_ESCAPE))
+	if (EventManager::KeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		std::cout << "Moving back to Main Menu..." << std::endl;
 		StateManager::ChangeState(new MainMenuScreen()); // Change back to main menu

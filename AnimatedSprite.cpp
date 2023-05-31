@@ -1,28 +1,37 @@
 #include "AnimatedSprite.h"
-AnimatedSprite::AnimatedSprite(int angle, float frameRate, int maxSprite,
-	SDL_Rect sourceTransform, SDL_FRect destinationTransform)
-	: Sprite(sourceTransform, destinationTransform, angle)
-	, m_currentSpriteIndex {0}
-	, m_maxSprite {maxSprite}
-	, m_currentTime {0}
-	, m_frameRate {frameRate}
+AnimatedSpriteObject::AnimatedSpriteObject(const SDL_Rect source, const SDL_FRect destination)
+	: SpriteObject(source, destination)
+	, m_currentSpriteIndex(0)
+	, m_totalSprite(0)
+	, m_currentTime(0)
+	, m_frameRate(0)
+	, m_startingSpriteIndex(0)
 {
 
 }
-void AnimatedSprite::Animate(float deltaTime)
+
+void AnimatedSpriteObject::SetAnimation(float frameRate, int startingSpriteIndex, int totalSprites, int sourceY)
+{
+	m_currentTime = 0;
+	m_frameRate = frameRate;
+	m_currentSpriteIndex = 0;
+	m_startingSpriteIndex = startingSpriteIndex;
+	m_totalSprite = totalSprites;
+	m_sourceTransform.x = m_sourceTransform.w * startingSpriteIndex;
+	m_sourceTransform.y = sourceY;
+}
+
+void AnimatedSpriteObject::Update(float deltaTime)
 {
 	m_currentTime += deltaTime;
-
 	if (m_currentTime > m_frameRate)
 	{
 		m_currentTime = m_frameRate - m_currentTime;
 		m_currentSpriteIndex++;
-
-		if (m_currentSpriteIndex == m_maxSprite)
+		if (m_currentSpriteIndex == m_totalSprite)
 		{
 			m_currentSpriteIndex = 0;
 		}
 	}
-
-	m_sourceTransform.x = m_sourceTransform.w * m_currentSpriteIndex; //this line updates the x pos to go over to the next one
+	m_sourceTransform.x = m_sourceTransform.w * (m_startingSpriteIndex * m_currentSpriteIndex);
 }

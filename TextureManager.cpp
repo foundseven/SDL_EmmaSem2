@@ -1,6 +1,4 @@
 #include "TextureManager.h"
-
-#include "TextureManager.h"
 #include "Game.h"
 
 #include <iostream>
@@ -19,6 +17,7 @@ void TextureManager::Load(const char* path, const std::string key)
 		s_textures.emplace(key, temp); // add to the map
 		std::cout << "Successfully Loaded! " << key << std::endl;
 	}
+	//return temp;
 }
 
 void TextureManager::Unload(const std::string key)

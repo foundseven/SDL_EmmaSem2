@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "StateManager.h"
 #include "States.h"
+#include "TextureManager.h"
+#include "EventManager.h"
 #include <iostream>
 
 //to refer to last semester this is all the stuff that was in that main section. this is the creaton of our window, init the engine
@@ -69,7 +71,11 @@ bool Game::init(const char* title, int xPos, int yPos)
 		return -1;
 	}
 
+
+
 	std::cout << "Initialization Successful!" << std::endl;
+
+	EventManager::Init();
 
 	StateManager::PushState(new TitleState());
 
@@ -88,29 +94,12 @@ bool Game::IsRunning()
 //if anything is happening on the screen, just make sure the game is still running
 void Game::HandleEvents()
 {
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_QUIT:
-			m_running = false;
-			break;
-		}
-		
-	}
+	EventManager::HandleEvents();
 }
 
-
-
-//this is for our input
-bool Game::KeyDown(SDL_Scancode key)
+void Game::Quit()
 {
-	if (m_keyStates)
-	{
-		return m_keyStates[key] == 1;
-	}
-	return false;
+	m_running = false;
 }
 
 //this is our void input stuff
@@ -132,6 +121,8 @@ void Game::Clear()
 {
 	std::cout << "Clearing engine..." << std::endl;
 	StateManager::Quit();
+	TextureManager::Quit();
+	EventManager::Quit();
 	SDL_DestroyRenderer(m_pRenderer);
 	SDL_DestroyWindow(m_pWindow);
 	SDL_Quit();
