@@ -12,8 +12,10 @@ public:
 	TiledLevel(int rows, int cols, int tileWidth, int  tileHeight,
 		const char* tileData, const char* levelData, const char* tileKey);
 	~TiledLevel();
-	void Update(float deltaTime) override;
-	void Render() override;
+	virtual void Update(float deltaTime) override;
+	virtual void Render() override;
+
+	std::vector<Tile*>& GetObsticales() { return m_obstacles; }
 
 private:
 	const char* m_tilekey;
@@ -23,5 +25,7 @@ private:
 	std::map<char, Tile*> m_tiles;
 	std::vector<std::vector<Tile*>> m_levelTiles; //2D vector 
 	std::vector<Tile*> m_obstacles;
+
+
 };
 

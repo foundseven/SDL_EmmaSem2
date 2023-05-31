@@ -154,32 +154,27 @@ void GameState::Enter() // Used for initialization
 	//startTime = SDL_GetTicks();
 	std::cout << "Entering GameState..." << std::endl;
 
+	TextureManager::Load("assets/punk.png", "playerTexture");
+	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
+
+	//m_pLevel = new TiledLevel(24, 32, 32, 32 "", , );
+
 	elapsedTime = 0.0f;
 
-	SDL_Rect sourceTransform{ 0, 0, 64, 64 };
-	/*m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform,{ 100, 500, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 500, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));*/
-
-
-	//m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
-
-
+	/*SDL_Rect sourceTransform{ 0, 0, 64, 64 };
+	
 	m_backgroundTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/background_far.png");
 	if (!m_backgroundTexture)
 	{
 		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
 
 	}
-	TextureManager::Load("assets/punk.png", "playerTexture");
-	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
 	SDL_Rect rect;
-	SDL_FRect frect;
+	SDL_FRect frect;*/
 
 	//SDL_QueryTexture(TextureManager::GetTexture());
 
 	m_pMusic = Mix_LoadMUS("assets/citybackground.mp3");
-
 	Mix_PlayMusic(m_pMusic, -1);
 
 }
@@ -205,41 +200,15 @@ void GameState::Update(float deltaTime)
 		std::cout << "You Win!" << std::endl;
 		StateManager::PushState(new WinScreen());
 	}
-	//else
-	//{
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_W))
-	//		m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
-
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_S))
-	//		m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
-
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_A))
-	//		m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
-
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_D))
-	//		m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
-	//}
-	//	//updating the animation
-	//	for (AnimatedSprite* pObject : m_GameObjects)
-	//	{
-	//		pObject->Animate(deltaTime);
-	//	}
-
-	//	//check for collision
-	//	for (AnimatedSprite* pObject : m_GameObjects)
-	//	{
-	//		if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
-	//		{
-	//			std::cout << "L! You LOSE!" << std::endl;
-	//			StateManager::PushState(new LoseScreen()); // Change to new LoseState
-	//		}
-
-	//	}		
+	else
+	{
+		m_pLevel->Update(deltaTime);
+	}
 }
 
 void GameState::Render()
 {
-	//std::cout << "Rendering GameState..." << std::endl;
+	std::cout << "Rendering GameState..." << std::endl;
 	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
 
 	//SDL_SetRenderDrawColor(pRenderer, &m_backgroundTexture ); // Changes the color or the GameState

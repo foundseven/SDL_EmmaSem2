@@ -13,7 +13,7 @@ public:
 	bool init(const char* title, int xPos, int yPos);
 	bool IsRunning();
 	void HandleEvents();
-	bool KeyDown(SDL_Scancode key);
+	void Quit();
 	void Update(float deltaTime);
 	void Render();
  	void Clear();
