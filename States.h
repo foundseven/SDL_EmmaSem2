@@ -34,6 +34,7 @@ private:
 public:
 
 	float elapsedTime;
+	SDL_Texture* m_titleScreen;
 
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;

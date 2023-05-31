@@ -22,6 +22,13 @@ void TitleState::Enter()
 
 void TitleState::Update(float deltaTime)
 {
+	m_titleScreen = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/titlescreen1.png");
+	if (!m_titleScreen)
+	{
+		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
+
+	}
+
 	elapsedTime += deltaTime;
 
 	if (elapsedTime >= 4.0f) 
@@ -33,14 +40,22 @@ void TitleState::Update(float deltaTime)
 
 void TitleState::Render()
 {
+	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
+
+
 	//std::cout << "Rendering TitleState..." << std::endl;
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 254, 254, 34, 255); // Changes the color or the titleState
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
+	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
+	
+	SDL_RenderCopy(pRenderer, m_titleScreen, nullptr, nullptr);
 }
 
 void TitleState::Exit()
 {
 	std::cout << "Leaving TitleState..." << std::endl;
+	SDL_DestroyTexture(m_titleScreen);
+
 }
 // End of TitleState
 
