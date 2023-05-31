@@ -57,6 +57,9 @@ public:
 	virtual void Exit() override;
 
 	SDL_Texture* m_mMBack;
+	SDL_Texture* m_mMInstruct;
+	SDL_Texture* m_mMLogo;
+
 
 
 

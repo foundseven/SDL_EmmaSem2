@@ -61,6 +61,18 @@ void MainMenuScreen::Update(float deltaTime)
 		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
 
 	}
+	m_mMInstruct = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/mm_instruct.png");
+	if (!m_mMInstruct)
+	{
+		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
+
+	}
+	m_mMLogo = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/mm_logo.png");
+	if (!m_mMLogo)
+	{
+		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
+
+	}
 
 	Game& GameInstance = Game::GetInstance();
 
@@ -87,13 +99,18 @@ void MainMenuScreen::Render()
 	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); // Set the clear color (black)
 	SDL_RenderClear(pRenderer);
 	SDL_RenderCopy(pRenderer, m_mMBack, nullptr, nullptr);
+	SDL_RenderCopy(pRenderer, m_mMInstruct, nullptr, nullptr);
+	SDL_RenderCopy(pRenderer, m_mMLogo, nullptr, nullptr);
 }
+
 
 void MainMenuScreen::Exit()
 {
 	std::cout << "Exiting Main Menu" << std::endl;
 
 	SDL_DestroyTexture(m_mMBack);
+	SDL_DestroyTexture(m_mMBack);
+	SDL_DestroyTexture(m_mMLogo);
 
 }
 // End of TitleState
