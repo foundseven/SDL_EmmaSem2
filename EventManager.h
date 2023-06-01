@@ -12,7 +12,7 @@ public:
 	static bool KeyPressed(const SDL_Scancode key);
 	static bool KeyReleased(const SDL_Scancode key);
 	static int LastKeyDown();
-	static int lastKeyUp();
+	static int LastKeyUp();
 
 	static bool MouseHeld(const int button);
 	static bool MousePressed(const int button);
@@ -42,4 +42,3 @@ private:
 	EventManager() {}
 
 };
-

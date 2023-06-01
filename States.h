@@ -5,7 +5,6 @@
 #include <SDL_mixer.h>
 #include "GameObject.h"
 #include "AnimatedSprite.h"
-#include <map>
 
 
 class GameObject;
@@ -16,16 +15,14 @@ class TiledLevel;
 class State // This is the abstract base class for all states
 {
 public:
-	State() = default;
-	virtual ~State() = default; // Modern alternative to {}
+	//State() = default;
+	//virtual ~State() = default; // Modern alternative to {}
 
 	virtual void Enter() = 0; // 0 means pure virtual - must be defined in subclass
 	virtual void Update(float deltaTime) = 0;
 	virtual void Render() = 0;
 	virtual void Exit() = 0;
 	virtual void Resume() {}
-
-	std::map<std::string, GameObject*> m_objects;
 };
 
 ////////////////////////////////
@@ -65,6 +62,7 @@ public:
 	GameObject* m_Player;
 	SDL_Texture* m_mMBack;
 	SDL_Texture* m_mMInstruct;
+	//SpriteObject* m_mMInstruct;
 	SDL_Texture* m_mMLogo;
 
 

@@ -26,3 +26,4 @@ private:
     bool m_obstacle;
     bool m_hazard;
 };
+

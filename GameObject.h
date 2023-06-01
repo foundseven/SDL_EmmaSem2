@@ -7,6 +7,19 @@
 class GameObject
 {
 public:
+	GameObject(float x, float y, float w, float h,
+		Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+	void Draw(SDL_Renderer* pRenderer);
+	void UpdatePositionX(float x);
+	void UpdatePositionY(float y);
+	SDL_FRect& GetTransform() { return m_Transform; }
+
+private:
+	SDL_FRect m_Transform;
+	SDL_Color m_Color;
+
+
+public:
 	GameObject()
 		: m_destinationTransform({ 0, 0, 0, 0 })
 	{}

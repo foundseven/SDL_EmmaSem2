@@ -17,3 +17,4 @@ private:
 	TextureManager() = default;
 
 };
+

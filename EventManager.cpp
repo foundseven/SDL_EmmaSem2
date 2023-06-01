@@ -44,6 +44,38 @@ void EventManager::HandleEvents()
 	s_currentMouseState = SDL_GetMouseState(&s_mousePos.x, &s_mousePos.y);
 
 }
+
+bool EventManager::KeyHeld(const SDL_Scancode key)
+{
+	if (s_currentKeyState)
+	{
+		return s_currentKeyState[key] == 1;
+	}
+	return false;
+}
+
+bool EventManager::KeyPressed(const SDL_Scancode key)
+{
+	return (s_currentKeyState[key] > s_lastKeyState[key]);
+}
+
+bool EventManager::KeyReleased(const SDL_Scancode key)
+{
+	return (s_currentKeyState[key] < s_lastKeyState[key]);
+
+}
+
+int EventManager::LastKeyDown()
+{
+	return s_lastKeyDown;
+}
+
+int EventManager::LastKeyUp()
+{
+	return s_lastKeyUp;
+}
+
+
 bool EventManager::MouseHeld(const int button)
 {
 	if (button >= 1 && button <= 3)
