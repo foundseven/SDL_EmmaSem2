@@ -57,6 +57,11 @@ bool EventManager::KeyHeld(const SDL_Scancode key)
 bool EventManager::KeyPressed(const SDL_Scancode key)
 {
 	return (s_currentKeyState[key] > s_lastKeyState[key]);
+	/*if (s_currentKeyState[key] > s_lastKeyState[key])
+	{
+		return 1;
+	} 
+	return false;*/
 }
 
 bool EventManager::KeyReleased(const SDL_Scancode key)

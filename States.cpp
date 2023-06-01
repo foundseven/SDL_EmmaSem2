@@ -159,7 +159,7 @@ void GameState::Enter() // Used for initialization
 
 	TextureManager::Load("assets/background_far.png", "gSBackground");
 	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
-	TextureManager::Load("assets/babyman.png", "playerTexture");
+	TextureManager::Load("assets/punk.png", "playerTexture");
 
 
 	m_gSBackground = TextureManager::GetTexture("gSBackground");
@@ -167,15 +167,15 @@ void GameState::Enter() // Used for initialization
 	m_gSEnemy = TextureManager::GetTexture("enemyTexture");
 
 
-	//m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
+	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
 
 	///////////////////////////////////////////
 
 	m_pMusic = Mix_LoadMUS("assets/citybackground.mp3");
-
 	Mix_PlayMusic(m_pMusic, -1);
 	 
 	/////////////////////////////////////////////
+
 	m_objects.emplace("player", new PlatformingPlayer({ 0, 0, 128, 128 }, { 288, 480, 64, 64 }));
 }
 
@@ -199,23 +199,7 @@ void GameState::Update(float deltaTime)
 		StateManager::PushState(new WinScreen());
 	}
 
-	if (EventManager::KeyPressed(SDL_SCANCODE_W))
-	{
-		
-
-	}
-	if (EventManager::KeyPressed(SDL_SCANCODE_S))
-	{
 	
-	}
-	if (EventManager::KeyPressed(SDL_SCANCODE_A))
-	{
-	
-	}
-	if (EventManager::KeyPressed(SDL_SCANCODE_D))
-	{
-	
-	}
 	else
 	{
 
@@ -224,35 +208,45 @@ void GameState::Update(float deltaTime)
 			object.second->Update(deltaTime);
 		}
 	}
-	//{
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_W))
-	//		m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
+	
+	if (EventManager::KeyPressed(SDL_SCANCODE_W))
+	{
+		m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
+	}
 
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_S))
-	//		m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
+	if (EventManager::KeyPressed(SDL_SCANCODE_S))
+	{
+		m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
+	}
 
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_A))
-	//		m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
+	if (EventManager::KeyPressed(SDL_SCANCODE_A))
+	{
+		m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
+	}
 
-	//	if (EventManager::KeyPressed(SDL_SCANCODE_D))
-	//		m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
-	//}
-	//	//updating the animation
-	//	for (AnimatedSprite* pObject : m_GameObjects)
-	//	{
-	//		pObject->Animate(deltaTime);
-	//	}
+	if (EventManager::KeyPressed(SDL_SCANCODE_D))
+	{
+		m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
+	}
+	
+	 
+	 //
+		////updating the animation
+		//for (AnimatedSpriteObject* pObject : m_GameObjects)
+		//{
+		//	pObject->Update(deltaTime);
+		//}
 
-	//	//check for collision
-	//	for (AnimatedSprite* pObject : m_GameObjects)
-	//	{
-	//		if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
-	//		{
-	//			std::cout << "L! You LOSE!" << std::endl;
-	//			StateManager::PushState(new LoseScreen()); // Change to new LoseState
-	//		}
+		////check for collision
+		//for (AnimatedSpriteObject* pObject : m_GameObjects)
+		//{
+		//	if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
+		//	{
+		//		std::cout << "L! You LOSE!" << std::endl;
+		//		StateManager::PushState(new LoseScreen()); // Change to new LoseState
+		//	}
 
-	//	}		
+		//}		
 }
 
 void GameState::Render()
@@ -268,7 +262,7 @@ void GameState::Render()
 	/////////////////////////////////////////////////////////////////
 
 	SDL_RenderCopy(pRenderer, m_gSBackground, nullptr, nullptr);
-	SDL_RenderCopy(pRenderer, m_gSPlayer, nullptr, nullptr);
+	//SDL_RenderCopy(pRenderer, m_gSPlayer, nullptr, nullptr);
 	SDL_RenderCopy(pRenderer, m_gSEnemy, nullptr, nullptr);
 
 
@@ -283,8 +277,8 @@ void GameState::Render()
 	//	}
 	//}
 
-	//SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
-	//SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
+	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
+	SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
 
 	SDL_RenderPresent(pRenderer);
 
@@ -299,11 +293,11 @@ void GameState::Exit()
 {
 	std::cout << "Exiting GameState..." << std::endl;
 
-	for (AnimatedSprite* pObject : m_GameObjects)
+	/*for (AnimatedSprite* pObject : m_GameObjects)
 	{
 		delete pObject;
 		pObject = nullptr;
-	}
+	}*/
 
 	//delete m_Player;
 	//m_Player = nullptr;

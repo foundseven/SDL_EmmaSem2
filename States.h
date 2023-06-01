@@ -82,9 +82,10 @@ class GameState : public State
 {
 public:
 
-	static const int kPlayerSpeed = 300;
-	std::vector<AnimatedSprite*> m_GameObjects;
+	static const int kPlayerSpeed = 1000;
+	std::vector<AnimatedSpriteObject*> m_GameObjects;
 	TiledLevel* m_pLevel;
+
 	GameObject* m_Player;
 
 	SDL_Texture* m_pPlayerTexture;

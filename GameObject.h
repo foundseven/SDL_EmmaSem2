@@ -14,12 +14,8 @@ public:
 	void UpdatePositionY(float y);
 	SDL_FRect& GetTransform() { return m_Transform; }
 
-private:
-	SDL_FRect m_Transform;
-	SDL_Color m_Color;
+	////////////////////////////////////
 
-
-public:
 	GameObject()
 		: m_destinationTransform({ 0, 0, 0, 0 })
 	{}
@@ -30,12 +26,20 @@ public:
 
 	virtual ~GameObject() = default;
 
-	virtual void Update(float deltaTime) = 0;
-	virtual void Render() = 0;
+	virtual void Update(float deltaTime)
+	{
+	};
+	virtual void Render()
+	{
+	};
 	SDL_FRect* GetDestinationTransform() { return &m_destinationTransform; }
 
+private:
+	SDL_FRect m_Transform;
+	SDL_Color m_Color;
 
 protected:
 	SDL_FRect m_destinationTransform;
+
 };
 
