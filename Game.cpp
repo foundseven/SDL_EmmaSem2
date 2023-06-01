@@ -40,6 +40,7 @@ bool Game::init(const char* title, int xPos, int yPos)
 
 	// Attempt to create a maximized window that can be restored to a KWidth x kHeight, centered window.
 	m_pWindow = SDL_CreateWindow("GAME 1017",             // title
+
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,   // x , y
 		kWidth, kHeight,                                  // witdh, height
 		0);                                               // flags

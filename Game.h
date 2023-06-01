@@ -4,8 +4,8 @@
 class Game
 {
 public:
-	static const int kWidth = 1024; //screen width
-	static const int kHeight = 768; //sccreen height
+	static const int kWidth = 1200; //screen width
+	static const int kHeight = 600; //sccreen height
 	static const int kRectangleSpeed = 300;
 
 public:

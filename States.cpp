@@ -7,6 +7,8 @@
 #include "TextureManager.h"
 #include "TiledLevel.h"
 #include "EventManager.h"
+#include "PlatformingPlayer.h"
+
 
 #include <iostream>
 #include <Windows.h>
@@ -70,25 +72,25 @@ void MainMenuScreen::Enter()
 {
 	std::cout << "Going to Main Menu..." << std::endl;
 
-	TextureManager::Load("assets/mainmenubackground.png", "mMTexture");
+	TextureManager::Load("assets/mainmenubackground2.png", "mMTexture");
 	TextureManager::Load("assets/mm_instruct.png", "instructTexture");
+	TextureManager::Load("assets/mm_instruct2.png", "instruct2Texture");
+
 	TextureManager::Load("assets/mm_logo.png", "mMLogoTexture");
 
 
 	m_mMBack = TextureManager::GetTexture("mMTexture");
 	m_mMInstruct = TextureManager::GetTexture("instructTexture");
+	m_mMInstruct2 = TextureManager::GetTexture("instruct2Texture");
+
 	m_mMLogo = TextureManager::GetTexture("mMLogoTexture");
 
 }
 
 void MainMenuScreen::Update(float deltaTime)
 {
-	/*TextureManager::Load("assets/enemy_idle.png", "enemyTexture");*/
 
-
-	////////////////////////////////////////////
-
-	Game& GameInstance = Game::GetInstance();
+	//Game& GameInstance = Game::GetInstance();
 
 	////////////////////////////////////////////
 
@@ -110,17 +112,20 @@ void MainMenuScreen::Render()
 	//	std::cout << "Rendering Main Menu..." << std::endl;
 	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
 
-	//for background
-	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
-	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); // Set the clear color (black)
 	SDL_RenderClear(pRenderer);
+	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
+	
+	////////////////////////////////////////////
 
-	SDL_Rect logoPOS{ 100, 100, 100, 100 };// this can change the sizing
+	SDL_Rect logoPOS{ 307, 100, 600, 200 };// this can change the sizing
+	SDL_Rect instructPOS{ 30, 10, 200, 50 };// this can change the sizing
+	SDL_Rect instruct2POS{ 1000, 10, 200, 50 };// this can change the sizing
 
 	SDL_RenderCopy(pRenderer, m_mMBack, nullptr, nullptr);
-	SDL_RenderCopy(pRenderer, m_mMInstruct, nullptr, nullptr);
-	SDL_RenderCopy(pRenderer, m_mMLogo, nullptr, &logoPOS); // this can change the sizing
+	SDL_RenderCopy(pRenderer, m_mMInstruct, nullptr, &instructPOS);
+	SDL_RenderCopy(pRenderer, m_mMInstruct2, nullptr, &instruct2POS);
 
+	SDL_RenderCopy(pRenderer, m_mMLogo, nullptr, &logoPOS); // this can change the sizing
 
 }
 
@@ -130,9 +135,9 @@ void MainMenuScreen::Exit()
 	std::cout << "Exiting Main Menu" << std::endl;
 
 	SDL_DestroyTexture(m_mMBack);
-	SDL_DestroyTexture(m_mMBack);
+	SDL_DestroyTexture(m_mMInstruct);
+	SDL_DestroyTexture(m_mMInstruct2);
 	SDL_DestroyTexture(m_mMLogo);
-
 }
 // End of TitleState
 
@@ -152,34 +157,31 @@ void GameState::Enter() // Used for initialization
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 500, 64, 64 }));
 	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));*/
 
+	TextureManager::Load("assets/background_far.png", "gSBackground");
+	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
+	TextureManager::Load("assets/babyman.png", "playerTexture");
+
+
+	m_gSBackground = TextureManager::GetTexture("gSBackground");
+	m_gSPlayer = TextureManager::GetTexture("playerTexture");
+	m_gSEnemy = TextureManager::GetTexture("enemyTexture");
+
 
 	//m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
 
-
-	m_backgroundTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/background_far.png");
-	if (!m_backgroundTexture)
-	{
-		std::cout << "Failed to load background texture: " << IMG_GetError() << std::endl;
-
-	}
-	TextureManager::Load("assets/punk.png", "playerTexture");
-	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
-	SDL_Rect rect;
-	SDL_FRect frect;
-
-	//SDL_QueryTexture(TextureManager::GetTexture());
+	///////////////////////////////////////////
 
 	m_pMusic = Mix_LoadMUS("assets/citybackground.mp3");
 
 	Mix_PlayMusic(m_pMusic, -1);
-
+	 
+	/////////////////////////////////////////////
+	m_objects.emplace("player", new PlatformingPlayer({ 0, 0, 128, 128 }, { 288, 480, 64, 64 }));
 }
 
 void GameState::Update(float deltaTime)
 {
 	elapsedTime += deltaTime;
-
-	Game& GameInstance = Game::GetInstance();
 
 	if (EventManager::KeyPressed(SDL_SCANCODE_M))
 	{
@@ -196,7 +198,32 @@ void GameState::Update(float deltaTime)
 		std::cout << "You Win!" << std::endl;
 		StateManager::PushState(new WinScreen());
 	}
-	//else
+
+	if (EventManager::KeyPressed(SDL_SCANCODE_W))
+	{
+		
+
+	}
+	if (EventManager::KeyPressed(SDL_SCANCODE_S))
+	{
+	
+	}
+	if (EventManager::KeyPressed(SDL_SCANCODE_A))
+	{
+	
+	}
+	if (EventManager::KeyPressed(SDL_SCANCODE_D))
+	{
+	
+	}
+	else
+	{
+
+		for (auto object : m_objects)
+		{
+			object.second->Update(deltaTime);
+		}
+	}
 	//{
 	//	if (EventManager::KeyPressed(SDL_SCANCODE_W))
 	//		m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
@@ -237,7 +264,13 @@ void GameState::Render()
 	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
 	SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); // Set the clear color (black)
 	SDL_RenderClear(pRenderer);
-	SDL_RenderCopy(pRenderer, m_backgroundTexture, nullptr, nullptr);
+
+	/////////////////////////////////////////////////////////////////
+
+	SDL_RenderCopy(pRenderer, m_gSBackground, nullptr, nullptr);
+	SDL_RenderCopy(pRenderer, m_gSPlayer, nullptr, nullptr);
+	SDL_RenderCopy(pRenderer, m_gSEnemy, nullptr, nullptr);
+
 
 	//for (AnimatedSprite* pObject : m_GameObjects)
 	//{
@@ -254,6 +287,12 @@ void GameState::Render()
 	//SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
 
 	SDL_RenderPresent(pRenderer);
+
+	for (auto object : m_objects)
+	{
+		object.second->Render();
+	}
+
 }
 
 void GameState::Exit()
@@ -266,12 +305,21 @@ void GameState::Exit()
 		pObject = nullptr;
 	}
 
-	delete m_Player;
-	m_Player = nullptr;
+	//delete m_Player;
+	//m_Player = nullptr;
 
-	SDL_DestroyTexture(m_backgroundTexture);
-	SDL_DestroyTexture(m_pPlayerTexture);
-	SDL_DestroyTexture(m_pObjectTexture);
+	for (auto object : m_objects)
+	{
+		delete object.second;
+		object.second = nullptr;
+	}
+	m_objects.clear();
+
+	TextureManager::Unload("player");
+
+	SDL_DestroyTexture(m_gSBackground);
+	SDL_DestroyTexture(m_gSPlayer);
+	SDL_DestroyTexture(m_gSEnemy);
 
 	Mix_FreeMusic(m_pMusic);
 	m_pMusic = nullptr;
