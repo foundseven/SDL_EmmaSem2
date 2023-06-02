@@ -11,7 +11,7 @@
 
 
 class GameObject;
-class AnimatedSprite;
+class AnimatedSpriteObject;
 class TiledLevel;
 
 
@@ -82,7 +82,7 @@ class GameState : public State
 {
 public:
 
-	static const int kPlayerSpeed = 1000;
+	static const int kPlayerSpeed = 400;
 	std::vector<AnimatedSpriteObject*> m_GameObjects;
 	TiledLevel* m_pLevel;
 

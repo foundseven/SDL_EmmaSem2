@@ -153,21 +153,23 @@ void GameState::Enter() // Used for initialization
 	elapsedTime = 0.0f;
 
 	SDL_Rect sourceTransform{ 0, 0, 64, 64 };
-	/*m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform,{ 100, 500, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 400, 500, 64, 64 }));
-	m_GameObjects.push_back(new AnimatedSprite(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));*/
+	m_GameObjects.push_back(new AnimatedSpriteObject(0, 0.1, 4, sourceTransform,{ 100, 500, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSpriteObject(0, 0.1, 4, sourceTransform, { 400, 500, 64, 64 }));
+	m_GameObjects.push_back(new AnimatedSpriteObject(0, 0.1, 4, sourceTransform, { 700, 500, 64, 64 }));
 
 	TextureManager::Load("assets/background_far.png", "gSBackground");
-	TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
+	//TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
 	TextureManager::Load("assets/punk.png", "playerTexture");
+
+	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
 
 
 	m_gSBackground = TextureManager::GetTexture("gSBackground");
 	m_gSPlayer = TextureManager::GetTexture("playerTexture");
-	m_gSEnemy = TextureManager::GetTexture("enemyTexture");
+	//m_gSEnemy = TextureManager::GetTexture("enemyTexture");
 
-
-	m_Player = new GameObject(Game::kWidth / 2, Game::kHeight / 2, 27, 36, 255, 255, 255, 255); //this is for the player as of right now... width and height
+	//for lab 2
+	m_pObjectTexture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), "assets/enemy_idle.png");
 
 	///////////////////////////////////////////
 
@@ -176,11 +178,13 @@ void GameState::Enter() // Used for initialization
 	 
 	/////////////////////////////////////////////
 
-	m_objects.emplace("player", new PlatformingPlayer({ 0, 0, 128, 128 }, { 288, 480, 64, 64 }));
+	//m_objects.emplace("player", new PlatformingPlayer({ 0, 0, 128, 128 }, { 288, 480, 64, 64 }));
 }
 
 void GameState::Update(float deltaTime)
 {
+	Game& GameInstance = Game::GetInstance();
+
 	elapsedTime += deltaTime;
 
 	if (EventManager::KeyPressed(SDL_SCANCODE_M))
@@ -230,23 +234,23 @@ void GameState::Update(float deltaTime)
 	}
 	
 	 
-	 //
-		////updating the animation
-		//for (AnimatedSpriteObject* pObject : m_GameObjects)
-		//{
-		//	pObject->Update(deltaTime);
-		//}
+	 
+		//updating the animation
+		for (AnimatedSpriteObject* pObject : m_GameObjects)
+		{
+			pObject->Update(deltaTime);
+		}
 
-		////check for collision
-		//for (AnimatedSpriteObject* pObject : m_GameObjects)
-		//{
-		//	if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
-		//	{
-		//		std::cout << "L! You LOSE!" << std::endl;
-		//		StateManager::PushState(new LoseScreen()); // Change to new LoseState
-		//	}
+		//check for collision
+		for (AnimatedSpriteObject* pObject : m_GameObjects)
+		{
+			if (CollisionManager::AABBCheck(m_Player->GetTransform(), pObject->GetDestinationTransform()))
+			{
+				std::cout << "L! You LOSE!" << std::endl;
+				StateManager::PushState(new LoseScreen()); // Change to new LoseState
+			}
 
-		//}		
+		}		
 }
 
 void GameState::Render()
@@ -266,26 +270,27 @@ void GameState::Render()
 	SDL_RenderCopy(pRenderer, m_gSEnemy, nullptr, nullptr);
 
 
-	//for (AnimatedSprite* pObject : m_GameObjects)
-	//{
-	//	{
-	//		//pObject->Draw(pRenderer);
-	//		SDL_FPoint pivot = { 0, 0 };
-	//		SDL_RenderCopyExF(pRenderer, TextureManager::GetTexture("enemyTexture"), &(pObject->GetSourceTransform())
-	//			, &(pObject->GetDestinationTransform())
-	//			, (pObject->GetAngle()), &pivot, SDL_FLIP_NONE);
-	//	}
-	//}
+	for (AnimatedSpriteObject* pObject : m_GameObjects)
+	{
+		{
+			//pObject->Draw(pRenderer);
+			SDL_FPoint pivot = { 0, 0 };
+			SDL_RenderCopyExF(pRenderer, m_pObjectTexture, &pObject->GetSourceTransform()
+				, &pObject->GetDestinationTransform()
+				, pObject->GetAngle(), &pivot, SDL_FLIP_NONE);
+		}
+	}
+
 
 	SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
 	SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
 
-	SDL_RenderPresent(pRenderer);
+	//SDL_RenderPresent(pRenderer);
 
-	for (auto object : m_objects)
+	/*for (auto object : m_objects)
 	{
 		object.second->Render();
-	}
+	}*/
 
 }
 
@@ -293,20 +298,21 @@ void GameState::Exit()
 {
 	std::cout << "Exiting GameState..." << std::endl;
 
-	/*for (AnimatedSprite* pObject : m_GameObjects)
+	for (AnimatedSpriteObject* pObject : m_GameObjects)
 	{
 		delete pObject;
 		pObject = nullptr;
-	}*/
+	}
 
-	//delete m_Player;
-	//m_Player = nullptr;
+	delete m_Player;
+	m_Player = nullptr;
 
 	for (auto object : m_objects)
 	{
 		delete object.second;
 		object.second = nullptr;
 	}
+
 	m_objects.clear();
 
 	TextureManager::Unload("player");
@@ -314,6 +320,9 @@ void GameState::Exit()
 	SDL_DestroyTexture(m_gSBackground);
 	SDL_DestroyTexture(m_gSPlayer);
 	SDL_DestroyTexture(m_gSEnemy);
+
+	SDL_DestroyTexture(m_pObjectTexture);
+
 
 	Mix_FreeMusic(m_pMusic);
 	m_pMusic = nullptr;

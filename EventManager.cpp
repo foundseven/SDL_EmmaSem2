@@ -35,8 +35,8 @@ void EventManager::HandleEvents()
 			break;
 		case SDL_KEYUP:
 			s_lastKeyUp = event.key.keysym.sym;
-			if (event.key.keysym.sym == SDLK_ESCAPE)
-				Game::GetInstance().Quit();
+			//if (event.key.keysym.sym == SDLK_ESCAPE)
+				//Game::GetInstance().Quit();
 			break;
 		}
 	}
@@ -56,12 +56,12 @@ bool EventManager::KeyHeld(const SDL_Scancode key)
 
 bool EventManager::KeyPressed(const SDL_Scancode key)
 {
-	return (s_currentKeyState[key] > s_lastKeyState[key]);
-	/*if (s_currentKeyState[key] > s_lastKeyState[key])
+	//return (s_currentKeyState[key] > s_lastKeyState[key]); .... what was this supposed to do? it just bugged my character moving
+	if (s_currentKeyState)
 	{
-		return 1;
-	} 
-	return false;*/
+		return s_currentKeyState[key] == 1;
+	}
+	return false;
 }
 
 bool EventManager::KeyReleased(const SDL_Scancode key)
