@@ -132,6 +132,11 @@ class CreditScreen : public State
 private:
 
 public:
+
+	SDL_Texture* m_cSBackground1;
+	SDL_Texture* m_cSBackground2;
+	SDL_Texture* m_cSBackground3;
+
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
@@ -147,7 +152,8 @@ class WinScreen : public State
 public:
 
 	SDL_Texture* m_wScreen;
-
+	SDL_Texture* m_wSBackground;
+	SDL_Texture* m_wSInstruct;
 
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;
@@ -162,6 +168,8 @@ class LoseScreen : public State
 public:
 
 	SDL_Texture* m_lScreen;
+	SDL_Texture* m_lSBackground;
+	SDL_Texture* m_lSInstruct;
 
 
 	virtual void Enter() override;

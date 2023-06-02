@@ -386,8 +386,12 @@ void PauseState::Exit()
 void WinScreen::Enter()
 {
 	std::cout << "Entering WinScreen..." << std::endl;
+	TextureManager::Load("assets/mainmenubackground2.png", "wSBTexture");
 	TextureManager::Load("assets/youwin.png", "winScreenTexture");
+	TextureManager::Load("assets/mm_instruct3.png", "wSITexture");
+	m_wSBackground = TextureManager::GetTexture("wSBTexture");
 	m_wScreen = TextureManager::GetTexture("winScreenTexture");
+	m_wSInstruct = TextureManager::GetTexture("wSITexture");
 
 
 }
@@ -411,16 +415,22 @@ void WinScreen::Render()
 	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
 
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 0, 102, 34, 255); // Changes the color or the titleState
+	SDL_RenderCopy(pRenderer, m_wSBackground, nullptr, nullptr);
+
 	SDL_Rect winPOS{ 307, 100, 600, 200 };// this can change the sizing
 	SDL_RenderCopy(pRenderer, m_wScreen, nullptr, &winPOS);
 
-
+	SDL_Rect winInstructPOS{ 470, 450, 250, 100 };// this can change the sizing
+	SDL_RenderCopy(pRenderer, m_wSInstruct, nullptr, &winInstructPOS);
 }
 
 void WinScreen::Exit()
 {
 	std::cout << "Exiting Win Screen..." << std::endl;
+	TextureManager::Unload("wSBTexture");
 	TextureManager::Unload("winScreenTexture");
+	TextureManager::Unload("wSITexture");
+
 
 }
 // End of Win Screen
@@ -432,8 +442,13 @@ void WinScreen::Exit()
 void LoseScreen::Enter()
 {
 	std::cout << "Entering LoseScreen..." << std::endl;
+	TextureManager::Load("assets/mainmenubackground2.png", "lSBTexture");
 	TextureManager::Load("assets/youlose.png", "loseScreenTexture");
+	TextureManager::Load("assets/mm_instruct3.png", "lSITexture");
+
+	m_lSBackground = TextureManager::GetTexture("lSBTexture");
 	m_lScreen = TextureManager::GetTexture("loseScreenTexture");
+	m_lSInstruct = TextureManager::GetTexture("lSITexture");
 
 
 }
@@ -457,15 +472,22 @@ void LoseScreen::Render()
 	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
 
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 230, 0, 0, 255);
+	SDL_RenderCopy(pRenderer, m_lSBackground, nullptr, nullptr);
 	SDL_Rect losePOS{ 307, 100, 600, 200 };// this can change the sizing
 	SDL_RenderCopy(pRenderer, m_lScreen, nullptr, &losePOS);
+
+	SDL_Rect loseInstructPOS{ 470, 450, 250, 100 };// this can change the sizing
+	SDL_RenderCopy(pRenderer, m_lSInstruct, nullptr, &loseInstructPOS);
 
 }
 
 void LoseScreen::Exit()
 {
 	std::cout << "Exiting Lose Screen..." << std::endl;
+	TextureManager::Unload("lSBTexture");
 	TextureManager::Unload("loseScreenTexture");
+	TextureManager::Unload("lSITexture");
+
 
 }
 // End of Lose Screen
@@ -476,6 +498,18 @@ void LoseScreen::Exit()
 void CreditScreen::Enter()
 {
 	std::cout << "Credit Screen activated!" << std::endl;
+
+	//back
+	TextureManager::Load("assets/credit1.png", "creditBTexture");
+	m_cSBackground1 = TextureManager::GetTexture("creditBTexture");
+
+	//mid
+	TextureManager::Load("assets/credit2.png", "creditB2Texture");
+	m_cSBackground2 = TextureManager::GetTexture("creditB2Texture");
+
+	//mid 2
+	TextureManager::Load("assets/credit3.png", "creditB3Texture");
+	m_cSBackground3 = TextureManager::GetTexture("creditB3Texture");
 }
 
 void CreditScreen::Update(float deltaTime)
@@ -489,13 +523,26 @@ void CreditScreen::Update(float deltaTime)
 
 void CreditScreen::Render()
 {
+	
 	//std::cout << "Rolling Credits!" << std::endl;
-	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 255, 207, 241, 255); // Changes the color or the titleState
-	SDL_RenderClear(Game::GetInstance().GetRenderer());
+	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
+
+	SDL_RenderClear(pRenderer);
+	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
+
+
+	SDL_RenderCopy(pRenderer, m_cSBackground1, nullptr, nullptr);
+	SDL_RenderCopy(pRenderer, m_cSBackground2, nullptr, nullptr);
+	SDL_RenderCopy(pRenderer, m_cSBackground3, nullptr, nullptr);
 }
 
 void CreditScreen::Exit()
 {
 	std::cout << "Leaving the Main Menu..." << std::endl;
+	TextureManager::Unload("creditBTexture");
+	TextureManager::Unload("creditB2Texture");
+	TextureManager::Unload("creditB3Texture");
+
+
 }
 // End of Credits
