@@ -25,14 +25,14 @@ void TitleState::Enter()
 {
 	std::cout << "TitleState activated!" << std::endl;
 	elapsedTime = 0.0f;
-}
-
-void TitleState::Update(float deltaTime)
-{
 
 	TextureManager::Load("assets/titlescreen1.png", "tSTexture");
 
 	m_titleScreen = TextureManager::GetTexture("tSTexture");
+}
+
+void TitleState::Update(float deltaTime)
+{
 
 	////////////////////////////////////////////
 
@@ -60,7 +60,9 @@ void TitleState::Render()
 void TitleState::Exit()
 {
 	std::cout << "Leaving TitleState..." << std::endl;
-	SDL_DestroyTexture(m_titleScreen);
+//	SDL_DestroyTexture(m_titleScreen);
+	TextureManager::Unload("tSTexture");
+
 
 }
 // End of TitleState
@@ -134,10 +136,16 @@ void MainMenuScreen::Exit()
 {
 	std::cout << "Exiting Main Menu" << std::endl;
 
-	SDL_DestroyTexture(m_mMBack);
+	TextureManager::Unload("mMTexture");
+	TextureManager::Unload("instructTexture");
+	TextureManager::Unload("instruct2Texture");
+	TextureManager::Unload("mMLogoTexture");
+
+
+	/*SDL_DestroyTexture(m_mMBack);
 	SDL_DestroyTexture(m_mMInstruct);
 	SDL_DestroyTexture(m_mMInstruct2);
-	SDL_DestroyTexture(m_mMLogo);
+	SDL_DestroyTexture(m_mMLogo);*/
 }
 // End of TitleState
 
@@ -307,19 +315,22 @@ void GameState::Exit()
 	delete m_Player;
 	m_Player = nullptr;
 
-	for (auto object : m_objects)
+	/*for (auto object : m_objects)
 	{
 		delete object.second;
 		object.second = nullptr;
-	}
+	}*/
 
-	m_objects.clear();
+	//m_objects.clear();
 
-	TextureManager::Unload("player");
+	TextureManager::Unload("gSBackground");
+	TextureManager::Unload("playerTexture");
 
-	SDL_DestroyTexture(m_gSBackground);
-	SDL_DestroyTexture(m_gSPlayer);
-	SDL_DestroyTexture(m_gSEnemy);
+
+
+	//SDL_DestroyTexture(m_gSBackground);
+	//SDL_DestroyTexture(m_gSPlayer);
+	//SDL_DestroyTexture(m_gSEnemy);
 
 	SDL_DestroyTexture(m_pObjectTexture);
 

@@ -64,7 +64,7 @@ public:
 	virtual void Render() override;
 	virtual void Exit() override;
 
-	GameObject* m_Player;
+	//GameObject* m_Player;
 	SDL_Texture* m_mMBack;
 	SDL_Texture* m_mMInstruct;
 	SDL_Texture* m_mMInstruct2;
@@ -84,7 +84,7 @@ public:
 
 	static const int kPlayerSpeed = 400;
 	std::vector<AnimatedSpriteObject*> m_GameObjects;
-	TiledLevel* m_pLevel;
+	//TiledLevel* m_pLevel;
 
 	GameObject* m_Player;
 
