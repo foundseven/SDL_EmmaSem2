@@ -72,6 +72,10 @@ bool Game::init(const char* title, int xPos, int yPos)
 		return -1;
 	}
 
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048))
+	{
+		std::cout << "Mix_OpenAudio() failed. Error: " << SDL_GetError() << std::endl;
+	}
 
 
 	std::cout << "Initialization Successful!" << std::endl;

@@ -59,6 +59,9 @@ class MainMenuScreen : public State
 private:
 
 public:
+
+	Mix_Music* m_pMenuMusic;
+
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
@@ -81,6 +84,10 @@ public:
 class GameState : public State
 {
 public:
+
+	Mix_Music* m_gSMusic;
+	Mix_Chunk* m_WalkSoundEffect;
+
 
 	static const int kPlayerSpeed = 400;
 	std::vector<AnimatedSpriteObject*> m_GameObjects;
@@ -136,6 +143,9 @@ public:
 	SDL_Texture* m_cSBackground1;
 	SDL_Texture* m_cSBackground2;
 	SDL_Texture* m_cSBackground3;
+
+	SDL_Texture* m_nCredit;
+	SDL_Texture* m_sICredit;
 
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;

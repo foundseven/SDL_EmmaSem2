@@ -50,7 +50,7 @@ void TitleState::Render()
 	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
 
 
-	std::cout << "Rendering TitleState..." << std::endl;
+//	std::cout << "Rendering TitleState..." << std::endl;
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 254, 254, 34, 255); // Changes the color or the titleState
 	SDL_RenderClear(Game::GetInstance().GetRenderer());
 	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
@@ -87,12 +87,22 @@ void MainMenuScreen::Enter()
 
 	m_mMLogo = TextureManager::GetTexture("mMLogoTexture");
 
+	///////////////////////////////////////////////////////////
+	//audio
+	if (!Mix_PlayingMusic())
+	{
+		m_pMenuMusic = Mix_LoadMUS("assets/mainmenu.wav");
+		Mix_VolumeMusic(MIX_MAX_VOLUME / 4);
+		Mix_PlayMusic(m_pMenuMusic, -1);
+	}
+	else if (Mix_PausedMusic())
+	{
+		Mix_ResumeMusic();
+	}
 }
 
 void MainMenuScreen::Update(float deltaTime)
 {
-
-	//Game& GameInstance = Game::GetInstance();
 
 	////////////////////////////////////////////
 
@@ -141,7 +151,7 @@ void MainMenuScreen::Exit()
 	TextureManager::Unload("instruct2Texture");
 	TextureManager::Unload("mMLogoTexture");
 
-
+	Mix_PauseMusic();
 	/*SDL_DestroyTexture(m_mMBack);
 	SDL_DestroyTexture(m_mMInstruct);
 	SDL_DestroyTexture(m_mMInstruct2);
@@ -181,8 +191,10 @@ void GameState::Enter() // Used for initialization
 
 	///////////////////////////////////////////
 
-	m_pMusic = Mix_LoadMUS("assets/citybackground.mp3");
-	Mix_PlayMusic(m_pMusic, -1);
+	m_gSMusic = Mix_LoadMUS("assets/audio/citybackground.mp3");
+	m_WalkSoundEffect = Mix_LoadWAV("assets/audio/walking1.wav");
+
+	Mix_PlayMusic(m_gSMusic, -1);
 	 
 	/////////////////////////////////////////////
 
@@ -224,21 +236,29 @@ void GameState::Update(float deltaTime)
 	if (EventManager::KeyPressed(SDL_SCANCODE_W))
 	{
 		m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
+		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
+
 	}
 
 	if (EventManager::KeyPressed(SDL_SCANCODE_S))
 	{
 		m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
+		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
+
 	}
 
 	if (EventManager::KeyPressed(SDL_SCANCODE_A))
 	{
 		m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
+		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
+
 	}
 
 	if (EventManager::KeyPressed(SDL_SCANCODE_D))
 	{
 		m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
+		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
+
 	}
 	
 	 
@@ -306,6 +326,15 @@ void GameState::Exit()
 {
 	std::cout << "Exiting GameState..." << std::endl;
 
+	Mix_FreeMusic(m_gSMusic);
+	m_gSMusic = nullptr;
+
+	Mix_FreeChunk(m_WalkSoundEffect);
+	m_WalkSoundEffect = nullptr;
+
+	Mix_FreeMusic(m_pMusic);
+	m_pMusic = nullptr;
+
 	for (AnimatedSpriteObject* pObject : m_GameObjects)
 	{
 		delete pObject;
@@ -333,8 +362,6 @@ void GameState::Exit()
 	SDL_DestroyTexture(m_pObjectTexture);
 
 
-	Mix_FreeMusic(m_pMusic);
-	m_pMusic = nullptr;
 }
 
 void GameState::Resume()
@@ -385,6 +412,9 @@ void PauseState::Exit()
 // Begin of TitleState
 void WinScreen::Enter()
 {
+
+	Mix_HaltMusic();
+
 	std::cout << "Entering WinScreen..." << std::endl;
 	TextureManager::Load("assets/mainmenubackground2.png", "wSBTexture");
 	TextureManager::Load("assets/youwin.png", "winScreenTexture");
@@ -392,7 +422,6 @@ void WinScreen::Enter()
 	m_wSBackground = TextureManager::GetTexture("wSBTexture");
 	m_wScreen = TextureManager::GetTexture("winScreenTexture");
 	m_wSInstruct = TextureManager::GetTexture("wSITexture");
-
 
 }
 
@@ -441,6 +470,8 @@ void WinScreen::Exit()
 // Begin of Lose
 void LoseScreen::Enter()
 {
+	Mix_HaltMusic();
+
 	std::cout << "Entering LoseScreen..." << std::endl;
 	TextureManager::Load("assets/mainmenubackground2.png", "lSBTexture");
 	TextureManager::Load("assets/youlose.png", "loseScreenTexture");
@@ -499,6 +530,8 @@ void CreditScreen::Enter()
 {
 	std::cout << "Credit Screen activated!" << std::endl;
 
+	Mix_ResumeMusic();
+
 	//back
 	TextureManager::Load("assets/credit1.png", "creditBTexture");
 	m_cSBackground1 = TextureManager::GetTexture("creditBTexture");
@@ -510,6 +543,15 @@ void CreditScreen::Enter()
 	//mid 2
 	TextureManager::Load("assets/credit3.png", "creditB3Texture");
 	m_cSBackground3 = TextureManager::GetTexture("creditB3Texture");
+
+	//name credit
+	TextureManager::Load("assets/mynamecred.png", "creditNameTexture");
+	m_nCredit = TextureManager::GetTexture("creditNameTexture");
+
+	//instruct
+	TextureManager::Load("assets/mm_instruct4.png", "cSITexture");
+	m_sICredit = TextureManager::GetTexture("cSITexture");
+
 }
 
 void CreditScreen::Update(float deltaTime)
@@ -534,14 +576,27 @@ void CreditScreen::Render()
 	SDL_RenderCopy(pRenderer, m_cSBackground1, nullptr, nullptr);
 	SDL_RenderCopy(pRenderer, m_cSBackground2, nullptr, nullptr);
 	SDL_RenderCopy(pRenderer, m_cSBackground3, nullptr, nullptr);
+
+	SDL_Rect nameCreditPOS{ 400, 450, 400, 100 };// this can change the sizing
+	SDL_RenderCopy(pRenderer, m_nCredit, nullptr, &nameCreditPOS);
+
+	SDL_Rect cSIPOS{ 20, 50, 200, 50 };// this can change the sizing
+	SDL_RenderCopy(pRenderer, m_sICredit, nullptr, &cSIPOS);
+
 }
 
 void CreditScreen::Exit()
 {
 	std::cout << "Leaving the Main Menu..." << std::endl;
+
+	Mix_PauseMusic();
+
 	TextureManager::Unload("creditBTexture");
 	TextureManager::Unload("creditB2Texture");
 	TextureManager::Unload("creditB3Texture");
+
+	TextureManager::Unload("creditNameTexture");
+	TextureManager::Unload("cSITexture");
 
 
 }
