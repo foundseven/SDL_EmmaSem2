@@ -326,8 +326,6 @@ void GameState::Exit()
 	TextureManager::Unload("gSBackground");
 	TextureManager::Unload("playerTexture");
 
-
-
 	//SDL_DestroyTexture(m_gSBackground);
 	//SDL_DestroyTexture(m_gSPlayer);
 	//SDL_DestroyTexture(m_gSEnemy);
@@ -388,6 +386,10 @@ void PauseState::Exit()
 void WinScreen::Enter()
 {
 	std::cout << "Entering WinScreen..." << std::endl;
+	TextureManager::Load("assets/youwin.png", "winScreenTexture");
+	m_wScreen = TextureManager::GetTexture("winScreenTexture");
+
+
 }
 
 void WinScreen::Update(float deltaTime)
@@ -402,13 +404,24 @@ void WinScreen::Update(float deltaTime)
 void WinScreen::Render()
 {
 	//std::cout << "Rendering Win Screen..." << std::endl;
+
+	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
+
+	SDL_RenderClear(pRenderer);
+	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
+
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 0, 102, 34, 255); // Changes the color or the titleState
-	SDL_RenderClear(Game::GetInstance().GetRenderer());
+	SDL_Rect winPOS{ 307, 100, 600, 200 };// this can change the sizing
+	SDL_RenderCopy(pRenderer, m_wScreen, nullptr, &winPOS);
+
+
 }
 
 void WinScreen::Exit()
 {
 	std::cout << "Exiting Win Screen..." << std::endl;
+	TextureManager::Unload("winScreenTexture");
+
 }
 // End of Win Screen
 
@@ -419,6 +432,10 @@ void WinScreen::Exit()
 void LoseScreen::Enter()
 {
 	std::cout << "Entering LoseScreen..." << std::endl;
+	TextureManager::Load("assets/youlose.png", "loseScreenTexture");
+	m_lScreen = TextureManager::GetTexture("loseScreenTexture");
+
+
 }
 
 void LoseScreen::Update(float deltaTime)
@@ -433,13 +450,23 @@ void LoseScreen::Update(float deltaTime)
 void LoseScreen::Render()
 {
 	//std::cout << "Rendering LoseScreen..." << std::endl;
+
+	SDL_Renderer* pRenderer = Game::GetInstance().GetRenderer();
+
+	SDL_RenderClear(pRenderer);
+	SDL_SetRenderTarget(pRenderer, nullptr); // Set the renderer target to default (screen)
+
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRenderer(), 230, 0, 0, 255);
-	SDL_RenderClear(Game::GetInstance().GetRenderer());
+	SDL_Rect losePOS{ 307, 100, 600, 200 };// this can change the sizing
+	SDL_RenderCopy(pRenderer, m_lScreen, nullptr, &losePOS);
+
 }
 
 void LoseScreen::Exit()
 {
 	std::cout << "Exiting Lose Screen..." << std::endl;
+	TextureManager::Unload("loseScreenTexture");
+
 }
 // End of Lose Screen
 

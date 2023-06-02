@@ -145,6 +145,10 @@ public:
 class WinScreen : public State
 {
 public:
+
+	SDL_Texture* m_wScreen;
+
+
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
@@ -156,6 +160,10 @@ public:
 class LoseScreen : public State
 {
 public:
+
+	SDL_Texture* m_lScreen;
+
+
 	virtual void Enter() override;
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
