@@ -174,6 +174,7 @@ xcopy "$(ProjectDir)assets" "$(OutDir)assets" /s /e /i /y</Command>
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="MathManager.h" />
     <ClInclude Include="PlatformingPlayer.h" />
+    <ClInclude Include="Soundmanager.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="States.h" />
@@ -190,6 +191,7 @@ xcopy "$(ProjectDir)assets" "$(OutDir)assets" /s /e /i /y</Command>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MathManager.cpp" />
     <ClCompile Include="PlatformingPlayer.cpp" />
+    <ClCompile Include="Soundmanager.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="States.cpp" />

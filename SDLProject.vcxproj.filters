@@ -54,6 +54,9 @@
     <ClInclude Include="TiledLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Soundmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -96,6 +99,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TiledLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Soundmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
