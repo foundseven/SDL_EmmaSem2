@@ -293,16 +293,6 @@ void GameState::Render()
 	SDL_RenderCopy(pRenderer, m_gSBackground, nullptr, nullptr);
 
 
-	//for (AnimatedSpriteObject* pObject : m_GameObjects)
-	//{
-	//	{
-	//		//pObject->Draw(pRenderer);
-	//		SDL_FPoint pivot = { 0, 0 };
-	//		SDL_RenderCopyExF(pRenderer, m_pObjectTexture, &pObject->GetSourceTransform()
-	//			, &pObject->GetDestinationTransform()
-	//			, pObject->GetAngle(), &pivot, SDL_FLIP_NONE);
-	//	}
-	//}
 
 	for (auto const& i : m_objects)
 	{

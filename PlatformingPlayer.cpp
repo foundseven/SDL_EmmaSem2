@@ -59,14 +59,14 @@ void PlatformingPlayer::Update(float deltaTime)
 		if (EventManager::KeyHeld(SDL_SCANCODE_A) && m_destinationTransform.x > 0)
 		{
 			m_accelX = -s_kAccelerationX;
-			if (!m_facingLeft)
-				m_facingLeft = true;
+			if (m_facingLeft)
+				m_facingLeft = false;
 		}
 		else if (EventManager::KeyHeld(SDL_SCANCODE_D) && m_destinationTransform.x < Game::kWidth - m_destinationTransform.w)
 		{
 			m_accelX = s_kAccelerationX;
-			if (m_facingLeft)
-				m_facingLeft = false;
+			if (!m_facingLeft)
+				m_facingLeft = true;
 		}
 		//Transition to jump.
 		if (EventManager::KeyPressed(SDL_SCANCODE_SPACE) && m_grounded)
@@ -74,7 +74,7 @@ void PlatformingPlayer::Update(float deltaTime)
 			Jump();
 		}
 		//Transition to idle.
-		if (EventManager::KeyHeld(SDL_SCANCODE_A) && !EventManager::KeyHeld(SDL_SCANCODE_D))
+		if (!EventManager::KeyHeld(SDL_SCANCODE_A) && !EventManager::KeyHeld(SDL_SCANCODE_D))
 		{
 			m_state = PlayerState::kIdle;
 			SetAnimation(0.1f, 0, 1, 448);
@@ -87,7 +87,7 @@ void PlatformingPlayer::Update(float deltaTime)
 		{
 			m_accelX = -s_kAccelerationX;
 			if (!m_facingLeft)
-				m_facingLeft - true;
+				m_facingLeft = true;
 		}
 		else if (EventManager::KeyHeld(SDL_SCANCODE_D) && m_destinationTransform.x < Game::kWidth - m_destinationTransform.w)
 		{
@@ -133,7 +133,7 @@ void PlatformingPlayer::Jump()
 	m_accelY = -s_kJumpForce;
 	m_grounded = false;
 	m_state = PlayerState::kJumping;
-	SetAnimation(0.1f, 7, 0, 448);
+	SetAnimation(0.1f, 0, 8, 192);
 }
 
 void PlatformingPlayer::Stop()
