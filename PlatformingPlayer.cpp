@@ -42,10 +42,12 @@ void PlatformingPlayer::Update(float deltaTime)
 	case PlayerState::kIdle:
 
 		// Transition to run.
-		if (EventManager::KeyPressed(SDL_SCANCODE_A) || EventManager::KeyPressed(SDL_SCANCODE_D))
+		if (EventManager::KeyHeld(SDL_SCANCODE_A) || EventManager::KeyHeld(SDL_SCANCODE_D))
 		{
 			m_state = PlayerState::kRunning;
+
 			SetAnimation(0.1f, 0, 8, 192);
+			std::cout << "Entering animation state" << std::endl;
 		}
 		//Transition to jump.
 		else if (EventManager::KeyPressed(SDL_SCANCODE_SPACE) && m_grounded)
@@ -57,17 +59,20 @@ void PlatformingPlayer::Update(float deltaTime)
 	case PlayerState::kRunning:
 		//Move left and right.
 
+
 		if (EventManager::KeyHeld(SDL_SCANCODE_A) && m_destinationTransform.x > 0)
 		{
 			m_accelX = -s_kAccelerationX;
 			if (m_facingLeft)
 				m_facingLeft = false;
+
 		}
 		else if (EventManager::KeyHeld(SDL_SCANCODE_D) && m_destinationTransform.x < Game::kWidth - m_destinationTransform.w)
 		{
 			m_accelX = s_kAccelerationX;
 			if (!m_facingLeft)
 				m_facingLeft = true;
+
 		}
 		//Transition to jump.
 		if (EventManager::KeyPressed(SDL_SCANCODE_SPACE) && m_grounded)
@@ -136,7 +141,11 @@ void PlatformingPlayer::Jump()
 	m_grounded = false;
 	m_state = PlayerState::kJumping;
 	SetAnimation(0.1f, 0, 8, 192);
+	std::cout << "Entering animation state" << std::endl;
+
 }
+
+
 
 void PlatformingPlayer::Stop()
 {

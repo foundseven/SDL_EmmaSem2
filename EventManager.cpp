@@ -56,12 +56,12 @@ bool EventManager::KeyHeld(const SDL_Scancode key)
 
 bool EventManager::KeyPressed(const SDL_Scancode key)
 {
-	//return (s_currentKeyState[key] > s_lastKeyState[key]); .... what was this supposed to do? it just bugged my character moving
 	if (s_currentKeyState)
 	{
 		return s_currentKeyState[key] == 1;
 	}
-	return false;
+	//return false;
+	return (s_currentKeyState[key] > s_lastKeyState[key]);// .... what was this supposed to do? it just bugged my character moving
 }
 
 bool EventManager::KeyReleased(const SDL_Scancode key)
