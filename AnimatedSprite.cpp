@@ -28,6 +28,18 @@ void AnimatedSpriteObject::SetAnimation(float frameRate, int startingSpriteIndex
 void AnimatedSpriteObject::Update(float deltaTime)
 {
 	m_currentTime += deltaTime;
+
+	if (m_currentTime >= m_frameRate)
+	{
+		m_currentTime -= m_frameRate;
+		m_currentSpriteIndex++;
+
+		if (m_currentSpriteIndex >= m_maxSprites)
+		{
+			m_currentSpriteIndex = 0;
+		}
+	}
+	/*m_currentTime += deltaTime;
 	if (m_currentTime > m_frameRate)
 	{
 		m_currentTime = m_frameRate - m_currentTime;
@@ -37,7 +49,5 @@ void AnimatedSpriteObject::Update(float deltaTime)
 			m_currentSpriteIndex = 0;
 		}
 	}
-	m_sourceTransform.x = m_sourceTransform.w * (m_startingSpriteIndex * m_currentSpriteIndex);
-	//m_sourceTransform.x = m_sourceTransform.w * m_currentSpriteIndex;
-
+	m_sourceTransform.x = m_sourceTransform.w * (m_startingSpriteIndex * m_currentSpriteIndex);*/
 }

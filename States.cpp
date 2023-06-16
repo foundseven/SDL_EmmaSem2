@@ -215,9 +215,9 @@ void GameState::Update(float deltaTime)
 	}
 	else
 	{
-		for (auto const& i : m_objects)
+		for (auto object : m_objects)
 		{
-			i.second->Update(deltaTime);
+			object.second->Update(deltaTime);
 		}
 	
 		//checking for collision
@@ -295,15 +295,15 @@ void GameState::Render()
 
 	SDL_RenderCopy(pRenderer, m_gSBackground, nullptr, nullptr);
 
-	for (auto const& i : m_objects)
+	/*for (auto const& i : m_objects)
 	{
 		i.second->Render();
-	}
+	}*/
 	
-	/*for (auto object : m_objects)
+	for (auto object : m_objects)
 	{
 		object.second->Render();
-	}*/
+	}
 
 }
 
@@ -316,16 +316,16 @@ void GameState::Exit()
 	TextureManager::Unload("player");
 
 	
-	/*for (auto object : m_objects)
+	for (auto object : m_objects)
 	{
 		delete object.second;
 		object.second = nullptr;
-	}*/
-	for (auto& i : m_objects)
+	}
+	/*for (auto& i : m_objects)
 	{
 		delete i.second;
 		i.second = nullptr;
-	}
+	}*/
 
 	m_objects.clear();
 

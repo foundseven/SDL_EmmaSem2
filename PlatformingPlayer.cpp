@@ -7,8 +7,8 @@
 
 
 const float PlatformingPlayer::s_kAccelerationX = 250;
-const float PlatformingPlayer::s_kGravity = 50;
-const float PlatformingPlayer::s_kJumpForce = 2000;
+const float PlatformingPlayer::s_kGravity = 25;
+const float PlatformingPlayer::s_kJumpForce = 1500;
 const float PlatformingPlayer::s_kMaxVelocityX = 350;
 const float PlatformingPlayer::s_kMaxVelocityY = 2000; 
 const float PlatformingPlayer::s_kDragx = 0.8f;
@@ -23,7 +23,7 @@ PlatformingPlayer::PlatformingPlayer(SDL_Rect sourceTransform, SDL_FRect destina
 	, m_velY(0)
 	, m_state(PlayerState::kIdle)
 {
-	//SetAnimation(0.1f, 0, 8, 448);
+	SetAnimation(0.1f, 0, 1, 448);
 	
 	Soundmanager::LoadSound("assets/audio/walking1.wav", "jump");
 	
@@ -42,10 +42,10 @@ void PlatformingPlayer::Update(float deltaTime)
 	case PlayerState::kIdle:
 
 		// Transition to run.
-		if (EventManager::KeyPressed(SDL_SCANCODE_A) || EventManager::KeyHeld(SDL_SCANCODE_D))
+		if (EventManager::KeyPressed(SDL_SCANCODE_A) || EventManager::KeyPressed(SDL_SCANCODE_D))
 		{
 			m_state = PlayerState::kRunning;
-			SetAnimation(0.1f, 0, 6, 448);
+			SetAnimation(0.1f, 0, 8, 192);
 		}
 		//Transition to jump.
 		else if (EventManager::KeyPressed(SDL_SCANCODE_SPACE) && m_grounded)
@@ -94,13 +94,13 @@ void PlatformingPlayer::Update(float deltaTime)
 		{
 			m_accelX = s_kAccelerationX;
 			if (!m_facingLeft)
-				m_facingLeft = false;
+				m_facingLeft = true;
 		}
 		//Hit the ground, transition to run.
 		if (m_grounded)
 		{
 			m_state = PlayerState::kRunning;
-			SetAnimation(0.1f, 0, 6, 448);
+			SetAnimation(0.1f, 0, 8, 192);
 		}
 		break;
 	}
@@ -120,6 +120,7 @@ void PlatformingPlayer::Update(float deltaTime)
 	m_accelY = 0.0f;
 
 	AnimatedSpriteObject::Update(deltaTime);
+
 }
 	
 void PlatformingPlayer::Render()
