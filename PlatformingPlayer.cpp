@@ -23,7 +23,8 @@ PlatformingPlayer::PlatformingPlayer(SDL_Rect sourceTransform, SDL_FRect destina
 	, m_velY(0)
 	, m_state(PlayerState::kIdle)
 {
-	SetAnimation(0.1f, 0, 1, 448);
+	//SetAnimation(0.1f, 0, 8, 448);
+	
 	Soundmanager::LoadSound("assets/audio/walking1.wav", "jump");
 	
 }
@@ -41,7 +42,7 @@ void PlatformingPlayer::Update(float deltaTime)
 	case PlayerState::kIdle:
 
 		// Transition to run.
-		if (EventManager::KeyPressed(SDL_SCANCODE_A) || EventManager::KeyPressed(SDL_SCANCODE_D))
+		if (EventManager::KeyPressed(SDL_SCANCODE_A) || EventManager::KeyHeld(SDL_SCANCODE_D))
 		{
 			m_state = PlayerState::kRunning;
 			SetAnimation(0.1f, 0, 6, 448);
@@ -86,13 +87,13 @@ void PlatformingPlayer::Update(float deltaTime)
 		if (EventManager::KeyHeld(SDL_SCANCODE_A) && m_destinationTransform.x > 0)
 		{
 			m_accelX = -s_kAccelerationX;
-			if (!m_facingLeft)
-				m_facingLeft = true;
+			if (m_facingLeft)
+				m_facingLeft = false;
 		}
 		else if (EventManager::KeyHeld(SDL_SCANCODE_D) && m_destinationTransform.x < Game::kWidth - m_destinationTransform.w)
 		{
 			m_accelX = s_kAccelerationX;
-			if (m_facingLeft)
+			if (!m_facingLeft)
 				m_facingLeft = false;
 		}
 		//Hit the ground, transition to run.

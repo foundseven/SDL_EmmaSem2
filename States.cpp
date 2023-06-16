@@ -178,101 +178,104 @@ void GameState::Enter() // Used for initialization
 	m_gSBackground = TextureManager::GetTexture("gSBackground");
 	
 	///////////////////////////////////////////
-
-	m_gSMusic = Mix_LoadMUS("assets/audio/citybackground.mp3");
-
-	Mix_PlayMusic(m_gSMusic, -1);
+	Soundmanager::LoadMusic("assets/audio/citybackground.mp3", "gSMUS");
 	 
 	/////////////////////////////////////////////
 
 	m_objects.emplace("level", new TiledLevel(24, 40, 32, 32, "assets/Data/Tiledata.txt", "assets/Data/Leveldata.txt", "tiles"));
-	m_objects.emplace("player", new PlatformingPlayer({ 0, 448, 64, 64 }, { 288, 480, 64, 64 }));
+	m_objects.emplace("player", new PlatformingPlayer({ 0, 0, 64, 64 }, { 288, 480, 64, 64 }));
 }
 
 void GameState::Update(float deltaTime)
 {
 	elapsedTime += deltaTime;
 
-	if (EventManager::KeyPressed(SDL_SCANCODE_M))
-	{
-		std::cout << "Going back to the Main Menu" << std::endl;
-		StateManager::ChangeState(new TitleState()); // Change to new TitleState
-	}
-	if (EventManager::KeyPressed(SDL_SCANCODE_P))
-	{
-		std::cout << "Changing to PauseState" << std::endl;
-		StateManager::PushState(new PauseState()); // Change to new PauseState
-	}
 	if (elapsedTime >= 30.0f)
 	{
 		std::cout << "You Win!" << std::endl;
 		StateManager::PushState(new WinScreen());
 	}
-
+	else if (EventManager::KeyPressed(SDL_SCANCODE_M))
+	{
+		std::cout << "Going back to the Main Menu" << std::endl;
+		StateManager::ChangeState(new TitleState()); // Change to new TitleState
+	}
+	else if (EventManager::KeyPressed(SDL_SCANCODE_P))
+	{
+		std::cout << "Changing to PauseState" << std::endl;
+		StateManager::PushState(new PauseState()); // Change to new PauseState
+	}
+	else if (!Mix_PlayingMusic())
+	{
+		Soundmanager::PlayMusic("gSMUS");
+	}
+	else if (Mix_PausedMusic())
+	{
+		Mix_ResumeMusic();
+	}
 	else
 	{
-		//m_pLevel->Update(deltaTime);
-		for (auto object : m_objects)
+		for (auto const& i : m_objects)
 		{
-			object.second->Update(deltaTime);
+			i.second->Update(deltaTime);
 		}
-	}
 	
-	//checking for collision
-	for (unsigned int i = 0; i < static_cast<TiledLevel*>(m_objects["level"])->GetObsticales().size(); i++)
-	{
-		SDL_FRect* obstaclesColliderTransform = static_cast<TiledLevel*>(m_objects["level"])->GetObsticales()[i]->GetDestinationTransform();
-		float obstacleLeft = obstaclesColliderTransform->x;
-		float obstacleRight = obstaclesColliderTransform->x + obstaclesColliderTransform->w;
-		float obstacleTop = obstaclesColliderTransform->y;
-		float obstacleBottom = obstaclesColliderTransform->y + obstaclesColliderTransform->h;
-
-		SDL_FRect* playerColliderTransform = m_objects["player"]->GetDestinationTransform();
-		float playerLeft = playerColliderTransform->x;
-		float playerRight = playerColliderTransform->x + playerColliderTransform->w;
-		float playerTop = playerColliderTransform->y;
-		float playerBottom = playerColliderTransform->y + playerColliderTransform->h;
-
-		//check if they collide hori
-		bool xOverlap = playerLeft < obstacleRight && playerRight > obstacleLeft;
-
-		//check if the overlap vert
-		bool yOverlap = playerTop < obstacleBottom && playerBottom > obstacleTop;
-
-		//to determine which direction the obst came from
-		float bottomCollision = obstacleBottom - playerColliderTransform->y;
-		float topCollision = playerBottom - obstaclesColliderTransform->y;
-		float leftCollision = playerRight - obstaclesColliderTransform->x;
-		float rightCollision = obstacleRight - playerColliderTransform->x;
-
-		if (xOverlap && yOverlap)
+		//checking for collision
+		for (unsigned int i = 0; i < static_cast<TiledLevel*>(m_objects["level"])->GetObsticales().size(); i++)
 		{
-			PlatformingPlayer* pPlayer = static_cast<PlatformingPlayer*>(m_objects["player"]);
+			SDL_FRect* obstaclesColliderTransform = static_cast<TiledLevel*>(m_objects["level"])->GetObsticales()[i]->GetDestinationTransform();
+			float obstacleLeft = obstaclesColliderTransform->x;
+			float obstacleRight = obstaclesColliderTransform->x + obstaclesColliderTransform->w;
+			float obstacleTop = obstaclesColliderTransform->y;
+			float obstacleBottom = obstaclesColliderTransform->y + obstaclesColliderTransform->h;
 
-			// Top collision
-			if (topCollision < bottomCollision && topCollision < leftCollision && topCollision < rightCollision)
+			SDL_FRect* playerColliderTransform = m_objects["player"]->GetDestinationTransform();
+			float playerLeft = playerColliderTransform->x;
+			float playerRight = playerColliderTransform->x + playerColliderTransform->w;
+			float playerTop = playerColliderTransform->y;
+			float playerBottom = playerColliderTransform->y + playerColliderTransform->h;
+
+			//check if they collide hori
+			bool xOverlap = playerLeft < obstacleRight && playerRight > obstacleLeft;
+
+			//check if the overlap vert
+			bool yOverlap = playerTop < obstacleBottom && playerBottom > obstacleTop;
+
+			//to determine which direction the obst came from
+			float bottomCollision = obstacleBottom - playerColliderTransform->y;
+			float topCollision = playerBottom - obstaclesColliderTransform->y;
+			float leftCollision = playerRight - obstaclesColliderTransform->x;
+			float rightCollision = obstacleRight - playerColliderTransform->x;
+
+			if (xOverlap && yOverlap)
 			{
-				pPlayer->StopY();
-				pPlayer->SetY(playerColliderTransform->y - topCollision);
-				pPlayer->SetGrounded(true);
-			}
-			//Bottom collision
-			if (bottomCollision < topCollision && bottomCollision < leftCollision && bottomCollision < rightCollision)
-			{
-				pPlayer->StopY();
-				pPlayer->SetY(playerColliderTransform->y + bottomCollision);
-			}
-			// Left collision
-			if (leftCollision < rightCollision && leftCollision < topCollision && leftCollision < bottomCollision)
-			{
-				pPlayer->Stop();
-				pPlayer->SetY(playerColliderTransform->x - leftCollision);
-			}
-			// Right collision
-			if (rightCollision < leftCollision && rightCollision < topCollision && rightCollision < bottomCollision)
-			{
-				pPlayer->StopX();
-				pPlayer->SetX(playerColliderTransform->x + rightCollision);
+				PlatformingPlayer* pPlayer = static_cast<PlatformingPlayer*>(m_objects["player"]);
+
+					// Top collision
+					if (topCollision < bottomCollision && topCollision < leftCollision && topCollision < rightCollision)
+					{
+						pPlayer->StopY();
+						pPlayer->SetY(playerColliderTransform->y - topCollision);
+						pPlayer->SetGrounded(true);
+					}
+					//Bottom collision
+					if (bottomCollision < topCollision && bottomCollision < leftCollision && bottomCollision < rightCollision)
+					{
+						pPlayer->StopY();
+						pPlayer->SetY(playerColliderTransform->y + bottomCollision);
+					}
+					// Left collision
+					if (leftCollision < rightCollision && leftCollision < topCollision && leftCollision < bottomCollision)
+					{
+						pPlayer->Stop();
+						pPlayer->SetY(playerColliderTransform->x - leftCollision);
+					}
+					// Right collision
+					if (rightCollision < leftCollision && rightCollision < topCollision && rightCollision < bottomCollision)
+					{
+						pPlayer->StopX();
+						pPlayer->SetX(playerColliderTransform->x + rightCollision);
+					}
 			}
 		}
 	}
@@ -292,17 +295,15 @@ void GameState::Render()
 
 	SDL_RenderCopy(pRenderer, m_gSBackground, nullptr, nullptr);
 
-
-
 	for (auto const& i : m_objects)
 	{
 		i.second->Render();
 	}
 	
-	for (auto object : m_objects)
+	/*for (auto object : m_objects)
 	{
 		object.second->Render();
-	}
+	}*/
 
 }
 
@@ -310,31 +311,33 @@ void GameState::Exit()
 {
 	std::cout << "Exiting GameState..." << std::endl;
 
-	Mix_FreeMusic(m_gSMusic);
+	TextureManager::Unload("gSBackground");
+	TextureManager::Unload("tiles");
+	TextureManager::Unload("player");
 
-	m_gSMusic = nullptr;
 	
-	for (auto object : m_objects)
+	/*for (auto object : m_objects)
 	{
 		delete object.second;
 		object.second = nullptr;
-	}
+	}*/
 	for (auto& i : m_objects)
 	{
 		delete i.second;
 		i.second = nullptr;
 	}
+
 	m_objects.clear();
 
-	TextureManager::Unload("gSBackground");
-	TextureManager::Unload("tiles");
-	TextureManager::Unload("player");
+	Soundmanager::StopMusic();
+	Soundmanager::UnloadMusic("gSMUS");
 
 }
 
 void GameState::Resume()
 {
 	std::cout << "Resuming GameState..." << std::endl;
+	Soundmanager::ResumeMusic();
 }
 // End of Gamestate
 
