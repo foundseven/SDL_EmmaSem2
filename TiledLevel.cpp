@@ -29,14 +29,16 @@ TiledLevel::TiledLevel(int rows, int cols, int tileWidth, int tileHeight,
 					isObstacle, isHazard));
 		}
 	}
-	inFile.close(); inFile.open(leveldata);
+	inFile.close();
+
+	inFile.open(leveldata);
 	if (inFile.is_open())
 	{
 		char key;
 		m_levelTiles.resize(m_rows); //this is important or we could not use the subscripts
 		for (int row = 0; row < m_rows; ++row)
 		{
-
+			m_levelTiles[row].resize(m_cols); //this is important or we could not use the subscripts
 			for (int col = 0; col < m_cols; ++col)
 			{
 				inFile >> key;
@@ -73,9 +75,11 @@ TiledLevel::~TiledLevel()
 		delete i->second;
 		i->second = nullptr;
 	}
+
+	m_tiles.clear();
 }
 
-void TiledLevel::Update(float deltaTime)
+void TiledLevel::Update([[maybe_unused]] float deltaTime)
 {
 
 }

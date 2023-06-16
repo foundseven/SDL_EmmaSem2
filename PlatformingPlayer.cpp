@@ -113,23 +113,23 @@ void PlatformingPlayer::Update(float deltaTime)
 	AnimatedSpriteObject::Update(deltaTime);
 }
 	
-			void PlatformingPlayer::Render()
-			{
-				SDL_RenderCopyExF(Game::GetInstance().GetRenderer(), TextureManager::GetTexture("player"),
-				&m_sourceTransform, &m_destinationTransform, 0.0, nullptr, (m_facingLeft ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
-			}
+void PlatformingPlayer::Render()
+{
+	SDL_RenderCopyExF(Game::GetInstance().GetRenderer(), TextureManager::GetTexture("player"),
+	&m_sourceTransform, &m_destinationTransform, 0.0, nullptr, (m_facingLeft ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE));
+}
 
-			void PlatformingPlayer::Jump()
-			{
-				m_accelY = -s_kJumpForce;
-				m_grounded = false;
-				m_state = PlayerState::kJumping;
-				SetAnimation(0.1f, 8, 1, 256);
-			}
+void PlatformingPlayer::Jump()
+{
+	m_accelY = -s_kJumpForce;
+	m_grounded = false;
+	m_state = PlayerState::kJumping;
+	SetAnimation(0.1f, 8, 1, 256);
+}
 
-			void PlatformingPlayer::Stop()
-			{
-				StopX();
-				StopY();
-			}
+void PlatformingPlayer::Stop()
+{
+	StopX();
+	StopY();
+}
 	
