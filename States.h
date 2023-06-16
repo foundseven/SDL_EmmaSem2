@@ -91,7 +91,7 @@ public:
 
 	static const int kPlayerSpeed = 400;
 	std::vector<AnimatedSpriteObject*> m_GameObjects;
-	TiledLevel* m_pLevel;
+	//TiledLevel* m_pLevel;
 
 	GameObject* m_Player;
 

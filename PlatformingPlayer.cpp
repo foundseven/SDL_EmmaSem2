@@ -22,7 +22,7 @@ PlatformingPlayer::PlatformingPlayer(SDL_Rect sourceTransform, SDL_FRect destina
 	, m_velY(0)
 	, m_state(PlayerState::kIdle)
 {
-	SetAnimation(0.1f, 0, 1, 256);
+	SetAnimation(0.1f, 0, 1, 448);
 }
 
 void PlatformingPlayer::Update(float deltaTime)
@@ -36,7 +36,7 @@ void PlatformingPlayer::Update(float deltaTime)
 		if (EventManager::KeyPressed(SDL_SCANCODE_A) || EventManager::KeyPressed(SDL_SCANCODE_D))
 		{
 			m_state = PlayerState::kRunning;
-			SetAnimation(0.1f, 0, 8, 256);
+			SetAnimation(0.1f, 0, 6, 448);
 		}
 		//Transition to jump.
 		else if (EventManager::KeyPressed(SDL_SCANCODE_SPACE) && m_grounded)
@@ -69,7 +69,7 @@ void PlatformingPlayer::Update(float deltaTime)
 		if (EventManager::KeyHeld(SDL_SCANCODE_A) && !EventManager::KeyHeld(SDL_SCANCODE_D))
 		{
 			m_state = PlayerState::kIdle;
-			SetAnimation(0.1f, 0, 1, 256);
+			SetAnimation(0.1f, 0, 1, 448);
 		}
 		break;
 
@@ -91,7 +91,7 @@ void PlatformingPlayer::Update(float deltaTime)
 		if (m_grounded)
 		{
 			m_state = PlayerState::kRunning;
-			SetAnimation(0.1f, 0, 8, 256);
+			SetAnimation(0.1f, 0, 6, 448);
 		}
 		break;
 	}
@@ -124,7 +124,7 @@ void PlatformingPlayer::Jump()
 	m_accelY = -s_kJumpForce;
 	m_grounded = false;
 	m_state = PlayerState::kJumping;
-	SetAnimation(0.1f, 8, 1, 256);
+	SetAnimation(0.1f, 7, 0, 448);
 }
 
 void PlatformingPlayer::Stop()

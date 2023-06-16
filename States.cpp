@@ -154,8 +154,6 @@ void MainMenuScreen::Exit()
 	TextureManager::Unload("mMLogoTexture");
 
 	Soundmanager::UnloadMusic("mainMenuMUS");
-
-	//Mix_PauseMusic();
 }
 // End of TitleState
 
@@ -174,16 +172,10 @@ void GameState::Enter() // Used for initialization
 
 	TextureManager::Load("assets/background_far.png", "gSBackground");
 	TextureManager::Load("assets/mapTiles.png", "tiles");
-
-	//TextureManager::Load("assets/enemy_idle.png", "enemyTexture");
-	//TextureManager::Load("assets/punk.png", "playerTexture");
+	TextureManager::Load("assets/player.png", "player");
 	
-	m_pLevel = new TiledLevel(24, 40, 32, 32, "assets/Data/Tiledata.txt", "assets/Data/Leveldata.txt", "tiles");
-
+	//m_pLevel = new TiledLevel(24, 40, 32, 32, "assets/Data/Tiledata.txt", "assets/Data/Leveldata.txt", "tiles");
 	m_gSBackground = TextureManager::GetTexture("gSBackground");
-	//m_gSPlayer = TextureManager::GetTexture("playerTexture");
-	//m_gSEnemy = TextureManager::GetTexture("enemyTexture");
-
 	
 	///////////////////////////////////////////
 
@@ -194,14 +186,12 @@ void GameState::Enter() // Used for initialization
 	 
 	/////////////////////////////////////////////
 
-	//m_tiles.emplace("level", m_pLevel);
-	//m_objects.emplace("player", new PlatformingPlayer({ 0, 0, 128, 128 }, { 288, 480, 64, 64 }));
+	m_objects.emplace("level", new TiledLevel(24, 40, 32, 32, "assets/Data/Tiledata.txt", "assets/Data/Leveldata.txt", "tiles"));
+	m_objects.emplace("player", new PlatformingPlayer({ 0, 448, 64, 64 }, { 288, 480, 64, 64 }));
 }
 
 void GameState::Update(float deltaTime)
 {
-	Game& GameInstance = Game::GetInstance();
-
 	elapsedTime += deltaTime;
 
 	if (EventManager::KeyPressed(SDL_SCANCODE_M))
@@ -223,36 +213,12 @@ void GameState::Update(float deltaTime)
 	
 	else
 	{
-		m_pLevel->Update(deltaTime);
+		//m_pLevel->Update(deltaTime);
+		for (auto object : m_objects)
+		{
+			object.second->Update(deltaTime);
+		}
 	}
-	
-	/*if (EventManager::KeyPressed(SDL_SCANCODE_W))
-	{
-		m_Player->UpdatePositionY(-kPlayerSpeed * deltaTime);
-		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
-
-	}
-
-	if (EventManager::KeyPressed(SDL_SCANCODE_S))
-	{
-		m_Player->UpdatePositionY(kPlayerSpeed * deltaTime);
-		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
-
-	}
-
-	if (EventManager::KeyPressed(SDL_SCANCODE_A))
-	{
-		m_Player->UpdatePositionX(-kPlayerSpeed * deltaTime);
-		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
-
-	}
-
-	if (EventManager::KeyPressed(SDL_SCANCODE_D))
-	{
-		m_Player->UpdatePositionX(kPlayerSpeed * deltaTime);
-		Mix_PlayChannel(-1, m_WalkSoundEffect, 0);
-
-	}*/
 	
 }
 
@@ -270,10 +236,6 @@ void GameState::Render()
 
 	SDL_RenderCopy(pRenderer, m_gSBackground, nullptr, nullptr);
 
-	m_pLevel->Render();
-	//SDL_RenderCopy(pRenderer, m_gSPlayer, nullptr, nullptr);
-	//SDL_RenderCopy(pRenderer, m_gSEnemy, nullptr, nullptr);
-
 
 	//for (AnimatedSpriteObject* pObject : m_GameObjects)
 	//{
@@ -286,14 +248,11 @@ void GameState::Render()
 	//	}
 	//}
 
-
-	//SDL_Rect playerIntRect = MathManager::ConvertFRect2Rect(m_Player->GetTransform());
-	//SDL_RenderCopy(pRenderer, TextureManager::GetTexture("playerTexture"), nullptr, &playerIntRect);
-
-
-	//SDL_RenderPresent(pRenderer);
-
 	
+	for (auto object : m_objects)
+	{
+		object.second->Render();
+	}
 
 }
 
@@ -310,19 +269,7 @@ void GameState::Exit()
 
 	/*Mix_FreeMusic(m_pMusic);
 	m_pMusic = nullptr;*/
-
-	/*for (AnimatedSpriteObject* pObject : m_GameObjects)
-	{
-		//delete pObject;
-		//pObject = nullptr;
-	}*/
-
-	/*delete m_Player;
-	m_Player = nullptr;*/
-
-	delete m_pLevel;
-	m_pLevel = nullptr;
-
+	
 
 	for (auto object : m_objects)
 	{
@@ -333,9 +280,8 @@ void GameState::Exit()
 	m_objects.clear();
 
 	TextureManager::Unload("gSBackground");
-	TextureManager::Unload("playerTexture");
 	TextureManager::Unload("tiles");
-
+	TextureManager::Unload("player");
 
 }
 
