@@ -3,6 +3,7 @@
 #include "States.h"
 #include "TextureManager.h"
 #include "EventManager.h"
+#include "Soundmanager.h"
 #include <iostream>
 
 //to refer to last semester this is all the stuff that was in that main section. this is the creaton of our window, init the engine
@@ -77,7 +78,19 @@ bool Game::init(const char* title, int xPos, int yPos)
 		std::cout << "Mix_OpenAudio() failed. Error: " << SDL_GetError() << std::endl;
 	}
 
+	if (Soundmanager::Init())
+	{
+		std::cout << "Soundmanager Init() succeeded. Error: " << std::endl;
+	}
+	else
+	{
+		std::cout << "Soundmanager Init() failed. Error: " << std::endl;
+		SDL_DestroyRenderer(m_pRenderer);
+		SDL_DestroyWindow(m_pWindow);
+		SDL_Quit();
+		return -1;
 
+	}
 	std::cout << "Initialization Successful!" << std::endl;
 
 	EventManager::Init();
@@ -128,6 +141,7 @@ void Game::Clear()
 	StateManager::Quit();
 	TextureManager::Quit();
 	EventManager::Quit();
+	Soundmanager::Quit();
 	SDL_DestroyRenderer(m_pRenderer);
 	SDL_DestroyWindow(m_pWindow);
 	SDL_Quit();

@@ -23,6 +23,8 @@ class PlatformingPlayer : public AnimatedSpriteObject
 public:
 
 	PlatformingPlayer(SDL_Rect sourceTransform, SDL_FRect destinationTransform);
+	~PlatformingPlayer(); // Destructor declaration
+
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
 	void Jump();

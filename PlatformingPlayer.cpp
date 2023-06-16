@@ -2,6 +2,7 @@
 #include "Game.h" 
 #include "EventManager.h" 
 #include "TextureManager.h" 
+#include "Soundmanager.h" 
 #include <cmath>
 
 
@@ -23,6 +24,13 @@ PlatformingPlayer::PlatformingPlayer(SDL_Rect sourceTransform, SDL_FRect destina
 	, m_state(PlayerState::kIdle)
 {
 	SetAnimation(0.1f, 0, 1, 448);
+	Soundmanager::LoadSound("assets/audio/walking1.wav", "jump");
+	
+}
+
+PlatformingPlayer::~PlatformingPlayer()
+{
+	Soundmanager::UnloadSound("jump");
 }
 
 void PlatformingPlayer::Update(float deltaTime)
@@ -121,6 +129,7 @@ void PlatformingPlayer::Render()
 
 void PlatformingPlayer::Jump()
 {
+	Soundmanager::PlaySound("jump");
 	m_accelY = -s_kJumpForce;
 	m_grounded = false;
 	m_state = PlayerState::kJumping;

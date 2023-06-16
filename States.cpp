@@ -180,7 +180,6 @@ void GameState::Enter() // Used for initialization
 	///////////////////////////////////////////
 
 	m_gSMusic = Mix_LoadMUS("assets/audio/citybackground.mp3");
-	m_WalkSoundEffect = Mix_LoadWAV("assets/audio/walking1.wav");
 
 	Mix_PlayMusic(m_gSMusic, -1);
 	 
@@ -210,7 +209,6 @@ void GameState::Update(float deltaTime)
 		StateManager::PushState(new WinScreen());
 	}
 
-	
 	else
 	{
 		//m_pLevel->Update(deltaTime);
@@ -220,6 +218,64 @@ void GameState::Update(float deltaTime)
 		}
 	}
 	
+	//checking for collision
+	for (unsigned int i = 0; i < static_cast<TiledLevel*>(m_objects["level"])->GetObsticales().size(); i++)
+	{
+		SDL_FRect* obstaclesColliderTransform = static_cast<TiledLevel*>(m_objects["level"])->GetObsticales()[i]->GetDestinationTransform();
+		float obstacleLeft = obstaclesColliderTransform->x;
+		float obstacleRight = obstaclesColliderTransform->x + obstaclesColliderTransform->w;
+		float obstacleTop = obstaclesColliderTransform->y;
+		float obstacleBottom = obstaclesColliderTransform->y + obstaclesColliderTransform->h;
+
+		SDL_FRect* playerColliderTransform = m_objects["player"]->GetDestinationTransform();
+		float playerLeft = playerColliderTransform->x;
+		float playerRight = playerColliderTransform->x + playerColliderTransform->w;
+		float playerTop = playerColliderTransform->y;
+		float playerBottom = playerColliderTransform->y + playerColliderTransform->h;
+
+		//check if they collide hori
+		bool xOverlap = playerLeft < obstacleRight && playerRight > obstacleLeft;
+
+		//check if the overlap vert
+		bool yOverlap = playerTop < obstacleBottom && playerBottom > obstacleTop;
+
+		//to determine which direction the obst came from
+		float bottomCollision = obstacleBottom - playerColliderTransform->y;
+		float topCollision = playerBottom - obstaclesColliderTransform->y;
+		float leftCollision = playerRight - obstaclesColliderTransform->x;
+		float rightCollision = obstacleRight - playerColliderTransform->x;
+
+		if (xOverlap && yOverlap)
+		{
+			PlatformingPlayer* pPlayer = static_cast<PlatformingPlayer*>(m_objects["player"]);
+
+			// Top collision
+			if (topCollision < bottomCollision && topCollision < leftCollision && topCollision < rightCollision)
+			{
+				pPlayer->StopY();
+				pPlayer->SetY(playerColliderTransform->y - topCollision);
+				pPlayer->SetGrounded(true);
+			}
+			//Bottom collision
+			if (bottomCollision < topCollision && bottomCollision < leftCollision && bottomCollision < rightCollision)
+			{
+				pPlayer->StopY();
+				pPlayer->SetY(playerColliderTransform->y + bottomCollision);
+			}
+			// Left collision
+			if (leftCollision < rightCollision && leftCollision < topCollision && leftCollision < bottomCollision)
+			{
+				pPlayer->Stop();
+				pPlayer->SetY(playerColliderTransform->x - leftCollision);
+			}
+			// Right collision
+			if (rightCollision < leftCollision && rightCollision < topCollision && rightCollision < bottomCollision)
+			{
+				pPlayer->StopX();
+				pPlayer->SetX(playerColliderTransform->x + rightCollision);
+			}
+		}
+	}
 }
 
 void GameState::Render()
@@ -248,6 +304,10 @@ void GameState::Render()
 	//	}
 	//}
 
+	for (auto const& i : m_objects)
+	{
+		i.second->Render();
+	}
 	
 	for (auto object : m_objects)
 	{
@@ -263,20 +323,17 @@ void GameState::Exit()
 	Mix_FreeMusic(m_gSMusic);
 
 	m_gSMusic = nullptr;
-
-	/*Mix_FreeChunk(m_WalkSoundEffect);
-	m_WalkSoundEffect = nullptr;*/
-
-	/*Mix_FreeMusic(m_pMusic);
-	m_pMusic = nullptr;*/
 	
-
 	for (auto object : m_objects)
 	{
 		delete object.second;
 		object.second = nullptr;
 	}
-
+	for (auto& i : m_objects)
+	{
+		delete i.second;
+		i.second = nullptr;
+	}
 	m_objects.clear();
 
 	TextureManager::Unload("gSBackground");
